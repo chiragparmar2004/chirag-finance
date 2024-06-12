@@ -63,7 +63,7 @@ export const login = async (req, res) => {
 
     const { password: userPassword, ...userInfo } = user;
 
-    return sendResponse(res, 200, "login success", { token, userInfo });
+    sendResponse(res, 200, "login success", { token, userInfo });
   } catch (error) {
     console.log("login failed error", error.message);
     sendResponse(res, 500, "Login failed");

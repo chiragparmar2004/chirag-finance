@@ -15,6 +15,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Member",
+      },
+    ],
   },
   { timestamps: true }
 );
