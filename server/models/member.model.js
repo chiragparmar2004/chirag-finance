@@ -14,6 +14,12 @@ const memberSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  loans: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Loan",
+    },
+  ],
 });
 
 const Member = mongoose.model("Member", memberSchema);
