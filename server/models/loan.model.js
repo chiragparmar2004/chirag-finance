@@ -17,10 +17,19 @@ const LoanSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["Pending", "Paid"],
+    default: "Pending",
+  },
   collectedMoney: {
     type: Number,
+    default: 0,
   },
   lastPaymentDate: {
+    type: Date,
+  },
+  nextPaymentDate: {
     type: Date,
   },
   member: {
@@ -28,6 +37,12 @@ const LoanSchema = new mongoose.Schema({
     ref: "Member",
     required: true,
   },
+  emis: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "EMI",
+    },
+  ],
 });
 
 export default mongoose.model("Loan", LoanSchema);
