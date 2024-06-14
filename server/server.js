@@ -4,13 +4,14 @@ import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
 import loanRoute from "./routes/loan.route.js";
 import emiRoute from "./routes/emi.route.js";
-
+import cors from "cors";
 import "dotenv/config";
 
 const app = express();
 app.use(express.json());
 
 dbConnection();
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 const PORT = process.env.PORT || 4000;
 

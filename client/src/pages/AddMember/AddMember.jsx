@@ -1,13 +1,26 @@
 import { useState } from "react";
+import apiRequest from "../../lib/apiRequest";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const AddMember = () => {
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    const formData = new FormData(e.target);
-    const inputs = Object.fromEntries(formData);
-    console.log("hellow");
-    console.log("Member added:", inputs);
+    try {
+      // Handle form submission logic here
+      const formData = new FormData(e.target);
+      const inputs = Object.fromEntries(formData);
+      const res = await apiRequest().post("/user/add_member", {
+        name: inputs.name,
+        mobileNumber: inputs.mobileNumber,
+      });
+      toast.success("Member added successfully");
+      navigate("/");
+    } catch (error) {
+      console.log(error, "error in addMember");
+      toast.error("Something went wrong");
+    }
   };
 
   return (
@@ -40,7 +53,7 @@ const AddMember = () => {
               <input
                 className=" appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-[#3b82f6]"
                 name="mobileNumber"
-                type="tel"
+                type="Number"
                 inputMode="numeric"
                 pattern="[0-9]"
               />

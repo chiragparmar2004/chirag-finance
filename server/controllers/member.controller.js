@@ -55,3 +55,25 @@ export const getAllMembers = async (req, res) => {
     sendResponse(res, 500, "error in getAllMembers");
   }
 };
+
+export const getSingleMember = async (req, res) => {
+  try {
+    const userId = req.userId; // Assuming userId is set by the verifyToken middleware
+    const { memberId } = req.params; // Destructure memberId from req.params
+
+    // Retrieve the member by ID
+    console.log(memberId);
+    const member = await Member.findById(memberId);
+    console.log(member);
+
+    if (!member) {
+      return sendResponse(res, 404, "Member not found");
+    }
+
+    // Send a success response with the member
+    sendResponse(res, 200, "Member retrieved successfully", member);
+  } catch (error) {
+    console.log("error in get member", error.message);
+    sendResponse(res, 500, "Error in getSingleMember");
+  }
+};

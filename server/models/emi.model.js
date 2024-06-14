@@ -7,7 +7,7 @@ const EMISchema = new mongoose.Schema({
   },
   paymentType: {
     type: String,
-    enum: ["Cash", "UPI"],
+    enum: ["Cash", "GPay"],
   },
   date: {
     type: Date,

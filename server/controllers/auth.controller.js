@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import sendResponse from "../lib/responseHelper.js";
 import jwt from "jsonwebtoken";
+
 export const register = async (req, res) => {
   try {
     console.log("Registration attempt");
@@ -17,10 +18,11 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    const profileImage = `https://ui-avatars.com/api/?name=${username}`;
     const newUser = await User.create({
       username: username,
       password: hashedPassword,
+      profilePicture: profileImage,
     });
 
     console.log("User registered successfully");
@@ -36,11 +38,11 @@ export const login = async (req, res) => {
     console.log("login attempt");
 
     const { username, password } = req.body;
-
+    console.log(username, password);
     const user = await User.findOne({ username });
 
     if (!user) {
-      return sendResponse(res, 401, "Invalid username or password");
+      return sendResponse(res, 404, "Invalid username or password");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -63,7 +65,8 @@ export const login = async (req, res) => {
 
     const { password: userPassword, ...userInfo } = user;
 
-    sendResponse(res, 200, "login success", { token, userInfo });
+    // sendResponse(res, 200, "login success", { token, userInfo });
+    res.status(200).json({ token, userInfo });
   } catch (error) {
     console.log("login failed error", error.message);
     sendResponse(res, 500, "Login failed");

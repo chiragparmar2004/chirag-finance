@@ -13,9 +13,9 @@ const MemberList = ({ members }) => {
       <ul>
         {members.map((member) => (
           <li
-            key={member.id}
+            key={member._id}
             className="border-b border-gray-200 py-2 cursor-pointer"
-            onClick={() => handleMemberClick(member.id)}
+            onClick={() => handleMemberClick(member._id)}
           >
             <div className="flex items-center justify-between">
               <div>

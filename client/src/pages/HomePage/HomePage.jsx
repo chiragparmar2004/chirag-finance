@@ -1,20 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MemberList from "../../components/MemberList/MemberList";
-import axios from "axios";
+import apiRequest from "../../lib/apiRequest";
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [members, setMembers] = useState([]);
 
-  // Dummy member data, replace with actual member data from your backend or state
-  const members = [
-    { id: 1, name: "John Doe", mobile: "123-456-7890" },
-    { id: 2, name: "Jane Smith", mobile: "987-654-3210" },
-    { id: 3, name: "Alice Johnson", mobile: "555-555-5555" },
-    { id: 4, name: "Bob Brown", mobile: "111-111-1111" },
-    { id: 5, name: "Charlie Black", mobile: "222-222-2222" },
-    { id: 6, name: "Dave White", mobile: "333-333-3333" },
-    // Add more members as needed
-  ];
+  useEffect(() => {
+    // Function to fetch members from the API
+    const fetchMembers = async () => {
+      try {
+        const response = await apiRequest().get("/user/allMembers"); // Update the API endpoint as needed
+        console.log(response.data.data);
+        setMembers(response.data.data);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
+    };
+
+    fetchMembers();
+  }, []);
 
   const filteredMembers = members.filter((member) =>
     member.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -31,13 +36,6 @@ const HomePage = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button
-          onClick={() => {
-            imag();
-          }}
-        >
-          Click me
-        </button>
       </div>
       <MemberList members={filteredMembers} />
     </div>

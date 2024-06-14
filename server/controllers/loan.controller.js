@@ -7,7 +7,11 @@ import EMI from "../models/emi.model.js";
 export const addLoan = async (req, res) => {
   try {
     const { memberId } = req.params;
-    const { amount, interest, startDate, endDate } = req.body;
+    const { amount, interest, startDate } = req.body;
+
+    // Calculate the end date as 100 days after the start date
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 100);
 
     // Create a new loan
     const newLoan = new Loan({
@@ -21,26 +25,6 @@ export const addLoan = async (req, res) => {
     // Save the new loan to the database
     await newLoan.save();
     console.log(newLoan, "new:Loan");
-
-    // Generate 100 EMIs
-    const emiAmount = amount / 100;
-    const emis = [];
-    let emiDate = new Date(startDate);
-
-    for (let i = 0; i < 100; i++) {
-      emiDate.setMonth(emiDate.getMonth() + 1);
-      const newEMI = new EMI({
-        amount: emiAmount,
-        date: new Date(emiDate),
-        loan: newLoan._id,
-      });
-      emis.push(newEMI);
-      await newEMI.save();
-    }
-
-    // Save the EMIs to the loan
-    newLoan.emis = emis.map((emi) => emi._id);
-    await newLoan.save();
 
     // Find the member and add the loan to the member's loans list
     const member = await Member.findById(memberId);

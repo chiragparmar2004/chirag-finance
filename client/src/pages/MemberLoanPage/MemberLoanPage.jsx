@@ -1,46 +1,67 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import apiRequest from "../../lib/apiRequest";
 
 // Dummy loan data, replace with actual loan data from your backend or state
-const loans = [
-  { memberId: 1, loanId: 1, status: "active", amount: 1000 },
-  { memberId: 1, loanId: 2, status: "closed", amount: 2000 },
-  { memberId: 2, loanId: 3, status: "active", amount: 3000 },
-  // Add more loans as needed
-];
 
 const MemberLoanPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const memberLoans = loans.filter(
-    (loan) => loan.memberId === parseInt(id) && loan.status === "active"
-  );
-
-  const handleLoanClick = (loanId) => {
-    navigate(`/loan/${loanId}`);
+  const [loans, setLoans] = useState([]);
+  const [member, setMember] = useState("");
+  const handleLoanClick = (id) => {
+    console.log(id);
+    navigate(`/loan/${id}`);
   };
 
+  useEffect(() => {
+    const fetchLoans = async () => {
+      try {
+        const response = await apiRequest().get(`/loan/${id}`); // Update the API endpoint as needed
+        console.log(response.data.data);
+        setLoans(response.data.data);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
+    };
+    const fetchMember = async () => {
+      try {
+        const response = await apiRequest().get(`/user/${id}`); // Update the API endpoint as needed
+        console.log(response.data.data);
+        setMember(response.data.data);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
+    };
+    fetchLoans();
+    fetchMember();
+  }, []);
+  // console.log(loans[0]._id);
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-4xl font-bold mb-8">Member Loans</h1>
       <div className="bg-gray-100 p-4 rounded-md shadow-md">
         <h2 className="text-2xl font-bold mb-4">
-          Active Loans for Member {id}
+          Active Loans for{" "}
+          <span className="text-3xl text-red-500">{member.name}</span>
         </h2>
         <ul>
-          {memberLoans.length > 0 ? (
-            memberLoans.map((loan) => (
+          {loans.length > 0 ? (
+            loans.map((loan) => (
               <li
-                key={loan.loanId}
+                key={loan._id}
                 className="border-b border-gray-200 py-2 cursor-pointer"
-                onClick={() => handleLoanClick(loan.loanId)}
+                onClick={() => handleLoanClick(loan._id)}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">
-                      Loan ID: {loan.loanId}
+                      Loan ID: {loan._id}
                     </h3>
-                    <p className="text-gray-500">Amount: ${loan.amount}</p>
+                    <p className="text-gray-500">
+                      Start Data: {loan.startDate.toString()}
+                    </p>
+                    <p className="text-gray-500">Amount: ₹{loan.amount}</p>
                   </div>
                 </div>
               </li>

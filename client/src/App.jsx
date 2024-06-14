@@ -7,6 +7,8 @@ import MemberLoanPage from "./pages/MemberLoanPage/MemberLoanPage";
 import LoanDetailPage from "./pages/LoanDetailPage/LoanDetailPage";
 import AddLoan from "./pages/AddLoan.jsx/AddLoan";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import Login from "./pages/LoginPage/Login";
+import Register from "./pages/RegisterPage/Register";
 
 function App() {
   const router = createBrowserRouter([
@@ -18,6 +20,14 @@ function App() {
         {
           path: "/",
           element: <HomePage />,
+        },
+        {
+          path: "/login",
+          element: <Login />,
+        },
+        {
+          path: "/register",
+          element: <Register />,
         },
         {
           path: "/Add_Loan",
