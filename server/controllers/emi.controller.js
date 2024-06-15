@@ -22,62 +22,14 @@ export const getEMIs = async (req, res) => {
   }
 };
 
-// export const addEMI = async (req, res) => {
-//   try {
-//     const { loanId } = req.params;
-//     const { amount, paymentType, date } = req.body;
-
-//     // Find the loan
-//     const loan = await Loan.findById(loanId);
-//     if (!loan) {
-//       return sendResponse(res, 404, "Loan not found");
-//     }
-
-//     // Calculate daily EMI amount
-//     const dailyEMIAmount = loan.amount / 100; // Assuming 100 days for simplicity
-
-//     // Calculate how many days this amount covers
-//     const numberOfDays = Math.floor(amount / dailyEMIAmount);
-//     console.log(numberOfDays, "number of days");
-//     // Create a new EMI for the bulk payment
-//     const newEMI = new EMI({
-//       amount: amount,
-//       paymentType: paymentType,
-//       date: date,
-//       loan: loanId,
-//     });
-
-//     // Save the new EMI to the database
-//     await newEMI.save();
-
-//     // Update loan details
-//     loan.collectedMoney = (loan.collectedMoney || 0) + amount;
-//     loan.lastPaymentDate = new Date(date);
-
-//     // Calculate the next payment date
-//     let nextPaymentDate = new Date(loan.lastPaymentDate);
-//     nextPaymentDate.setDate(nextPaymentDate.getDate() + numberOfDays + 1);
-//     console.log(nextPaymentDate.toString(), "payment date");
-//     loan.nextPaymentDate = nextPaymentDate;
-//     loan.emis.push(newEMI._id);
-
-//     // Save the updated loan details
-//     await loan.save();
-
-//     // Send a success response
-//     sendResponse(res, 201, "Bulk payment added successfully", newEMI);
-//   } catch (error) {
-//     console.log("error in addEMI", error.message);
-//     sendResponse(res, 500, "error in addEMI");
-//   }
-// };
-
 import { addDays } from "date-fns";
+import User from "../models/user.model.js";
 
+//TODO
 // export const addEMI = async (req, res) => {
 //   try {
 //     const { loanId } = req.params;
-//     const { amount, paymentType, date } = req.body;
+//     const { amount, paymentType } = req.body;
 
 //     // Find the loan
 //     const loan = await Loan.findById(loanId);
@@ -94,7 +46,7 @@ import { addDays } from "date-fns";
 //     // Create new EMIs for the bulk payment
 //     const newEMIs = [];
 //     let remainingAmount = amount;
-//     let currentDate = new Date(date);
+//     let currentDate = new Date();
 
 //     for (let i = 0; i < numberOfDays; i++) {
 //       const emiAmount = dailyEMIAmount;
@@ -107,7 +59,7 @@ import { addDays } from "date-fns";
 //       await newEMI.save();
 //       newEMIs.push(newEMI._id);
 //       remainingAmount -= emiAmount;
-//       currentDate = addDays(currentDate, 1);
+//       // currentDate = addDays(currentDate, 1);
 //     }
 
 //     // Add the remaining amount as the last EMI if any
@@ -124,14 +76,80 @@ import { addDays } from "date-fns";
 
 //     // Update loan details
 //     loan.collectedMoney = (loan.collectedMoney || 0) + amount;
-//     loan.lastPaymentDate = new Date(date);
+//     loan.lastPaymentDate = new Date();
 //     loan.emis = loan.emis.concat(newEMIs);
 
 //     // Save the updated loan details
 //     await loan.save();
 
 //     // Send a success response
-//     sendResponse(res, 201, "Bulk payment added successfully", newEMIs);
+//     sendResponse(res, 201, "Bulk payment added successfully", loan);
+//   } catch (error) {
+//     console.log("error in addEMI", error.message);
+//     sendResponse(res, 500, "error in addEMI");
+//   }
+// };
+
+//Todo:Complete runnig below
+// export const addEMI = async (req, res) => {
+//   try {
+//     const { loanId } = req.params;
+//     const { amount, paymentType } = req.body;
+
+//     // Find the loan
+//     const loan = await Loan.findById(loanId);
+//     if (!loan) {
+//       return sendResponse(res, 404, "Loan not found");
+//     }
+
+//     // Calculate daily EMI amount
+//     const dailyEMIAmount = loan.amount / 100; // Assuming 100 days for simplicity
+
+//     // Calculate how many days this amount covers
+//     const numberOfDays = Math.floor(amount / dailyEMIAmount);
+
+//     // Create new EMIs for the bulk payment
+//     const newEMIs = [];
+//     let currentDate = new Date();
+
+//     // Add the first EMI entry with the full payment amount
+//     const firstEMI = new EMI({
+//       amount: amount,
+//       paymentType: paymentType,
+//       date: currentDate,
+//       loan: loanId,
+//     });
+//     await firstEMI.save();
+//     newEMIs.push(firstEMI._id);
+
+//     // Add subsequent EMI entries with zero amounts
+//     for (let i = 1; i < numberOfDays; i++) {
+//       currentDate = new Date(currentDate.setDate(currentDate.getDate()));
+//       const newEMI = new EMI({
+//         amount: 0,
+//         paymentType: paymentType,
+//         date: currentDate,
+//         loan: loanId,
+//       });
+//       await newEMI.save();
+//       newEMIs.push(newEMI._id);
+//     }
+
+//     // Update loan details
+//     loan.collectedMoney = (loan.collectedMoney || 0) + amount;
+//     loan.lastPaymentDate = new Date();
+//     loan.emis = loan.emis.concat(newEMIs);
+
+//     // Check if the loan is fully paid
+//     if (loan.collectedMoney >= loan.amount) {
+//       loan.status = "complete"; // Assuming 'complete' is the status for fully paid loans
+//     }
+
+//     // Save the updated loan details
+//     await loan.save();
+
+//     // Send a success response
+//     sendResponse(res, 201, "Bulk payment added successfully", loan);
 //   } catch (error) {
 //     console.log("error in addEMI", error.message);
 //     sendResponse(res, 500, "error in addEMI");
@@ -144,7 +162,7 @@ export const addEMI = async (req, res) => {
     const { amount, paymentType } = req.body;
 
     // Find the loan
-    const loan = await Loan.findById(loanId);
+    const loan = await Loan.findById(loanId).populate("member");
     if (!loan) {
       return sendResponse(res, 404, "Loan not found");
     }
@@ -157,28 +175,24 @@ export const addEMI = async (req, res) => {
 
     // Create new EMIs for the bulk payment
     const newEMIs = [];
-    let remainingAmount = amount;
     let currentDate = new Date();
 
-    for (let i = 0; i < numberOfDays; i++) {
-      const emiAmount = dailyEMIAmount;
-      const newEMI = new EMI({
-        amount: emiAmount,
-        paymentType: paymentType,
-        date: currentDate,
-        loan: loanId,
-      });
-      await newEMI.save();
-      newEMIs.push(newEMI._id);
-      remainingAmount -= emiAmount;
-      // currentDate = addDays(currentDate, 1);
-    }
+    // Add the first EMI entry with the full payment amount
+    const firstEMI = new EMI({
+      amount,
+      paymentType,
+      date: currentDate,
+      loan: loanId,
+    });
+    await firstEMI.save();
+    newEMIs.push(firstEMI._id);
 
-    // Add the remaining amount as the last EMI if any
-    if (remainingAmount > 0) {
+    // Add subsequent EMI entries with zero amounts
+    for (let i = 1; i < numberOfDays; i++) {
+      currentDate = new Date(currentDate.setDate(currentDate.getDate()));
       const newEMI = new EMI({
-        amount: remainingAmount,
-        paymentType: paymentType,
+        amount: 0,
+        paymentType,
         date: currentDate,
         loan: loanId,
       });
@@ -191,47 +205,23 @@ export const addEMI = async (req, res) => {
     loan.lastPaymentDate = new Date();
     loan.emis = loan.emis.concat(newEMIs);
 
+    // Check if the loan is fully paid
+    if (loan.collectedMoney >= loan.amount) {
+      loan.status = "Paid"; // Updated status to "Paid"
+    }
+
     // Save the updated loan details
     await loan.save();
+
+    // Update the user's receivedPayments array
+    const user = await User.findById(loan.member.user);
+    user.receivedPayments.push(newEMIs[0]);
+    await user.save();
 
     // Send a success response
     sendResponse(res, 201, "Bulk payment added successfully", loan);
   } catch (error) {
     console.log("error in addEMI", error.message);
-    sendResponse(res, 500, "error in addEMI");
+    sendResponse(res, 500, "Error in addEMI");
   }
 };
-
-// export const addEMI = async (req, res) => {
-//   try {
-//     const { loanId } = req.params;
-//     const { amount, paymentType } = req.body;
-
-//     // Find the loan
-//     const loan = await Loan.findById(loanId);
-//     if (!loan) {
-//       return sendResponse(res, 404, "Loan not found");
-//     }
-
-//     // Create new EMI entry
-//     const newEMI = new EMI({
-//       amount,
-//       paymentType,
-//       date: new Date(), // or use the provided paymentDate if you pass it from frontend
-//       loan: loanId,
-//     });
-
-//     // Save the new EMI
-//     await newEMI.save();
-
-//     // Update loan details
-//     loan.emis.push(newEMI._id);
-//     await loan.save();
-
-//     // Send a success response
-//     sendResponse(res, 201, "EMI added successfully", loan);
-//   } catch (error) {
-//     console.error("Error adding EMI:", error.message);
-//     sendResponse(res, 500, "Error adding EMI");
-//   }
-// };

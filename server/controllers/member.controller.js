@@ -13,12 +13,14 @@ export const addMember = async (req, res) => {
     if (existingMember) {
       return sendResponse(res, 400, "Member already exists");
     }
+    const profileImage = `https://ui-avatars.com/api/?name=${name}`;
 
     // Create a new member
     const newMember = new Member({
       name,
       mobileNumber,
       user: userId,
+      profilePicture: profileImage,
     });
 
     // Save the new member to the database

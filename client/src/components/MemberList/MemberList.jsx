@@ -8,27 +8,31 @@ const MemberList = ({ members }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 rounded-md shadow-md">
-      <h2 className="text-2xl font-bold mb-4">All Members</h2>
-      <ul>
+    <div className="bg-gray-100 p-8 rounded-md shadow-md">
+      <h2 className="text-3xl font-bold mb-6 text-center">All Members</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {members.map((member) => (
-          <li
+          <div
             key={member._id}
-            className="border-b border-gray-200 py-2 cursor-pointer"
+            className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
             onClick={() => handleMemberClick(member._id)}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">{member.name}</h3>
-                <p className="text-gray-500">{member.mobile}</p>
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24   rounded-full mb-4 flex items-center justify-center">
+                <img
+                  src={member.profilePicture}
+                  className="rounded-full scale-150  "
+                />
               </div>
-              <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-4 rounded">
+              <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
+              <p className="text-gray-500 mb-4">{member.mobile}</p>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                 View Details
               </button>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

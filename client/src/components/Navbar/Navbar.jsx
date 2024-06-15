@@ -5,7 +5,6 @@ import { AuthContext } from "../../context/AuthContext";
 const Navbar = () => {
   const location = useLocation();
   const { currentUser } = useContext(AuthContext);
-  console.log(currentUser._doc.profilePicture);
   const getLinkClass = (path) =>
     location.pathname === path
       ? "text-white dark:text-gray-200 border-b-2 border-blue-500 mx-1.5 sm:mx-6"
@@ -49,7 +48,7 @@ const Navbar = () => {
                 Login
               </Link>
               <Link
-                to="/signup"
+                to="/register"
                 className="text-blue-500 hover:text-blue-700 transition duration-200"
               >
                 Signup

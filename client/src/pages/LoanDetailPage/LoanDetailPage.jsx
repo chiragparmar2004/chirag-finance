@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import { format, addDays, parseISO } from "date-fns";
 import AddEmiModal from "../../components/AddEmiModal/AddEmiModal";
 import apiRequest from "../../lib/apiRequest"; // Ensure this is correctly set up for your API requests
-import cashIcon from "../../../public/dollar_1052866.png";
-import gpayIcon from "../../../public/google-pay_6124998.png";
+
+import toast from "react-hot-toast";
+import { BsCashCoin } from "react-icons/bs";
 
 // Generate date range between two dates
 const generateDateRange = (startDate, endDate) => {
@@ -62,9 +63,9 @@ const LoanDetailPage = () => {
   const renderPaymentMethodIcon = (method) => {
     switch (method) {
       case "Cash":
-        return <img src={cashIcon} alt="Cash" height="50px" width="25px" />;
+        return <BsCashCoin />;
       case "GPay":
-        return <img src={gpayIcon} alt="GPay" height="50px" width="35px" />;
+        return <BsCashCoin />;
       default:
         return null;
     }
@@ -85,6 +86,7 @@ const LoanDetailPage = () => {
 
       // Close the modal after successful submission
       setIsModalOpen(false);
+      toast.success("Emi Added successfully");
       // location.reload();
     } catch (error) {
       console.error("Error adding EMI:", error.message);
@@ -115,6 +117,9 @@ const LoanDetailPage = () => {
             <strong>End Date:</strong>{" "}
             {format(parseISO(loan.endDate), "dd-MM-yyyy")}
           </p>
+          <p className="mb-2">
+            <strong>Collected Amount:</strong> {loan.collectedMoney}
+          </p>
         </div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Loan Data</h2>
@@ -137,7 +142,7 @@ const LoanDetailPage = () => {
                   <th className="py-2 px-4 border-b">Payment Date</th>
                 </tr>
               </thead>
-              <tbody className="text-2xl text-center">
+              <tbody className="text-2xl text-center ">
                 {dateRange.map((date, index) => {
                   const emiEntry = emiData[index] || {};
                   return (
@@ -149,7 +154,7 @@ const LoanDetailPage = () => {
                       <td className="py-2 px-4 border-b">
                         {emiEntry.amount !== undefined ? emiEntry.amount : ""}
                       </td>
-                      <td className="py-2 px-4 border-b">
+                      <td className="py-2 px-4 border-b text-center ">
                         {renderPaymentMethodIcon(emiEntry.paymentType)}
                       </td>
                       <td className="py-2 px-4 border-b">
