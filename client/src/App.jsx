@@ -9,7 +9,7 @@ import AddLoan from "./pages/AddLoan.jsx/AddLoan";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Login from "./pages/LoginPage/Login";
 import Register from "./pages/RegisterPage/Register";
-import PaymentsPage from "./pages/ProfilePage/ProfilePage";
+import PaymentsPage from "./pages/ProfilePage/PaymentPage";
 
 function App() {
   const router = createBrowserRouter([
