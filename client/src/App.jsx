@@ -51,7 +51,7 @@ function App() {
           element: <Dashboard />,
         },
         {
-          path: "/profile",
+          path: "/payments",
           element: <PaymentsPage />,
         },
       ],

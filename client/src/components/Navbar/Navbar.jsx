@@ -29,10 +29,13 @@ const Navbar = () => {
           <Link to="/Dashboard" className={getLinkClass("/Dashboard")}>
             Dashboard
           </Link>
+          <Link to="/payments" className={getLinkClass("/payments")}>
+            Payments
+          </Link>
         </div>
         <div className="flex items-center">
           {currentUser ? (
-            <Link to="/profile">
+            <Link to="/">
               <img
                 src={currentUser._doc.profilePicture} // Assuming user object has a profileImage property
                 alt="Profile"

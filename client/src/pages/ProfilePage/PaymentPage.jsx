@@ -1,7 +1,7 @@
 // PaymentsPage.jsx
 
 import { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import apiRequest from "../../lib/apiRequest";
 import { format, parseISO } from "date-fns";
 
@@ -90,7 +90,7 @@ const PaymentsPage = () => {
             onChange={(e) => setPaymentType(e.target.value)}
             className="flex-grow md:flex-grow-0 md:w-auto border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           >
-            <option value="">All Payment Types</option>
+            <option value="">All </option>
             <option value="Cash">Cash</option>
             <option value="GPay">GPay</option>
           </select>
@@ -126,23 +126,33 @@ const PaymentsPage = () => {
               key={payment._id}
               className="w-full md:w-1/2 lg:w-1/2 px-4 mb-4"
             >
-              <div className="bg-gray-50 p-4 rounded-md shadow flex justify-between items-center">
-                <div>
-                  <p className="text-lg font-semibold">₹{payment.amount}</p>
-                  <p className="text-gray-500">
-                    {format(parseISO(payment.date), "dd-MM-yyyy")}
-                  </p>
-                  <p className="text-gray-500">{payment.paymentType}</p>
-                  <p className="text-gray-500">
-                    Member: {payment.loan.member.name}
-                  </p>
+              <div className="bg-blue-200 p-4 text-xl rounded-md shadow flex justify-between items-center">
+                <div className="flex justify-between">
+                  <div className="flex items-center">
+                    <img
+                      src={payment.loan.member.profilePicture}
+                      alt={payment.loan.member.name}
+                      className="w-10 h-10  rounded-full mr-4"
+                    />
+                  </div>
+                  <div className="">
+                    <p className="text-black text-2xl">
+                      {payment.loan.member.name}
+                    </p>
+                    <p className="text-black text-base ">
+                      {format(parseISO(payment.date), "dd-MM-yyyy")}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <img
-                    src={payment.loan.member.profilePicture}
-                    alt={payment.loan.member.name}
-                    className="w-10 h-10 rounded-full mr-4"
-                  />
+                <div className="flex w-1/2 justify-evenly  items-center flex-row-reverse ">
+                  <p className="text-lg font-semibold">₹{payment.amount}</p>
+                  <div className="w-1/2 justify-between items-end scale-125">
+                    {payment.paymentType === "Cash" ? (
+                      <img src="/cash.png" alt="Cash" className="w-8 h-8" />
+                    ) : (
+                      <img src="/gpay.png" alt="GPay" className="w-8 h-8" />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
