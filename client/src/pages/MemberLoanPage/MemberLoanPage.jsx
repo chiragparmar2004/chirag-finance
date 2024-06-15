@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiRequest from "../../lib/apiRequest";
+import { format, parseISO } from "date-fns";
 
 // Dummy loan data, replace with actual loan data from your backend or state
 
@@ -39,29 +40,31 @@ const MemberLoanPage = () => {
   // console.log(loans[0]._id);
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-8">Member Loans</h1>
-      <div className="bg-gray-100 p-4 rounded-md shadow-md">
-        <h2 className="text-2xl font-bold mb-4">
-          Active Loans for{" "}
-          <span className="text-3xl text-red-500">{member.name}</span>
-        </h2>
+      <h1 className="text-2xl font-bold mb-4 text-white ">
+        Active Loans for{" "}
+        <span className="text-3xl text-[#0085ff]">{member.name}</span>
+      </h1>{" "}
+      <div className="bg-[#454545] shadow-custom-inset  p-4 rounded-lg ">
         <ul>
           {loans.length > 0 ? (
             loans.map((loan) => (
               <li
                 key={loan._id}
-                className="border-b border-gray-200 py-2 cursor-pointer"
+                className=" border-gray-200 py-2 cursor-pointer"
                 onClick={() => handleLoanClick(loan._id)}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold">
+                    <h3 className="text-2xl font-semibold text-white mb-1">
                       Loan ID: {loan._id}
                     </h3>
-                    <p className="text-gray-500">
-                      Start Data: {loan.startDate.toString()}
+                    <p className="text-white">
+                      Start Date :{" "}
+                      {format(parseISO(loan.startDate), "dd-MM-yyyy")}
                     </p>
-                    <p className="text-gray-500">Amount: ₹{loan.amount}</p>
+                    <p className="text-2xl text-white">
+                      Amount: ₹{loan.amount}
+                    </p>
                   </div>
                 </div>
               </li>

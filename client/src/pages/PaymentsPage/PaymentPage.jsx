@@ -66,8 +66,8 @@ const PaymentsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-10 px-6">
-      <div className="w-full h-full mt-10 bg-white p-8 shadow-md rounded-md mb-8">
+    <div className="min-h-full flex flex-col items-center  px-6">
+      <div className="w-full h-full mt-10 bg-[#454545] p-8 shadow-custom-inset rounded-lg mb-8">
         <h1 className="text-3xl font-bold text-center mb-6">
           Received Payments
         </h1>
@@ -76,7 +76,7 @@ const PaymentsPage = () => {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="flex-grow md:flex-grow-0 md:w-auto border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className=" bg-[#454545]  flex-grow md:flex-grow-0 md:w-auto   rounded py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
           />
           <input
             type="text"

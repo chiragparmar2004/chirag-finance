@@ -112,14 +112,14 @@ const AddLoan = ({ onSubmit }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
+    <div className="flex items-center justify-center min-h-screen ">
+      <div className="max-w-md w-full bg-[#454545] shadow-custom-inset   rounded-lg p-6">
+        <h1 className="text-3xl font-bold mb-6 text-center text-white">
           Add Loan
         </h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="text-white">
           <div className="mb-4 relative">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-white text-sm font-bold mb-2">
               Member Name
             </label>
             <input
@@ -127,15 +127,15 @@ const AddLoan = ({ onSubmit }) => {
               name="memberName"
               value={formData.memberName}
               onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter member name"
             />
             {memberSuggestions.length > 0 && (
-              <ul className="absolute w-full bg-white border border-gray-300 rounded mt-1 z-10">
+              <ul className="absolute w-full bg-gray-500 border border-gray-300 rounded mt-1 z-10">
                 {memberSuggestions.map((member) => (
                   <li
                     key={member._id}
-                    className="cursor-pointer py-2 px-3 hover:bg-blue-100"
+                    className="cursor-pointer py-2 px-3 hover:font-bold"
                     onClick={() => handleMemberSelection(member)}
                   >
                     {member.name}
@@ -145,7 +145,7 @@ const AddLoan = ({ onSubmit }) => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-white text-sm font-bold mb-2">
               Amount
             </label>
             <input
@@ -153,14 +153,14 @@ const AddLoan = ({ onSubmit }) => {
               name="amount"
               value={formData.amount}
               onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter custom amount"
             />
             <div className="flex mt-2 space-x-2">
               {defaultAmountOptions.map((option) => (
                 <div
                   key={option}
-                  className="cursor-pointer bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-300 rounded px-3 py-1"
+                  className="cursor-pointer bg-white hover:bg-blue-200 text-gray-500 border border-blue-300 rounded px-3 py-1"
                   onClick={() => handleAmountOptionClick(option)}
                 >
                   ₹{option}
@@ -169,7 +169,7 @@ const AddLoan = ({ onSubmit }) => {
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-white text-sm font-bold mb-2">
               Interest
             </label>
             <input
@@ -177,12 +177,12 @@ const AddLoan = ({ onSubmit }) => {
               name="interest"
               value={formData.interest}
               onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight "
               placeholder="Enter interest amount"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-white text-sm font-bold mb-2">
               Start Date
             </label>
             <input
@@ -190,11 +190,11 @@ const AddLoan = ({ onSubmit }) => {
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="appearance-none border rounded w-full py-2 px-3  text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-white text-sm font-bold mb-2">
               End Date
             </label>
             <input
@@ -202,14 +202,14 @@ const AddLoan = ({ onSubmit }) => {
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled
             />
           </div>
           <div className="flex items-center justify-center">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-blue-600 hover:bg-white text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Add Loan
             </button>

@@ -95,10 +95,9 @@ const LoanDetailPage = () => {
   };
 
   return (
-    <div className="bg-blue-200">
+    <div className="">
       <div className="container mx-auto py-8">
-        <h1 className="text-4xl font-bold mb-8">Loan Details</h1>
-        <div className="bg-gray-100 p-4 rounded-md shadow-md mb-8">
+        <div className="bg-[#454545] shadow-custom-inset p-4 rounded-lg mb-8 text-white">
           <h2 className="text-2xl font-bold mb-4">Loan ID: {loan._id}</h2>
           <p className="mb-2">
             <strong>Member ID:</strong> {loan.member}
@@ -122,7 +121,7 @@ const LoanDetailPage = () => {
           </p>
         </div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Loan Data</h2>
+          <h2 className="text-2xl font-bold"></h2>
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={handleAddEmi}
@@ -130,7 +129,7 @@ const LoanDetailPage = () => {
             Add EMI
           </button>
         </div>
-        <div className="bg-white p-4 rounded-md shadow-md">
+        {/* <div className="bg-white p-4 rounded-md shadow-md">
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-300">
               <thead>
@@ -168,7 +167,72 @@ const LoanDetailPage = () => {
               </tbody>
             </table>
           </div>
+        </div> */}
+
+        <div className="">
+          <table className="w-full text-sm text-left bg-[#1e1e1e]">
+            <caption className="p-5 text-lg font-semibold text-left text-white">
+              EMI Payment Details
+              <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+                Explore your EMI payment records to stay updated with your
+                financial transactions.
+              </p>
+            </caption>
+            <thead className="text-xl text-white text-center uppercase bg-[#1e1e1e]">
+              <tr>
+                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                  Serial No.
+                </th>
+                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                  Date
+                </th>
+                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                  EMI Amount
+                </th>
+                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                  Payment Method
+                </th>
+                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                  Payment Date
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {dateRange.map((date, index) => {
+                const emiEntry = emiData[index] || {};
+                return (
+                  <tr
+                    key={index}
+                    className={
+                      "bg-[#454545] shadow-custom-inset text-white text-2xl text-center"
+                    }
+                  >
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white border-b">
+                      {index + 1}
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      {format(date, "dd/MM/yyyy")}
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      {emiEntry.amount !== undefined
+                        ? `${emiEntry.amount}`
+                        : ""}
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      {emiEntry.paymentType || ""}
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      {emiEntry.date
+                        ? format(parseISO(emiEntry.date), "dd/MM/yyyy")
+                        : ""}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
+
         <AddEmiModal
           isOpen={isModalOpen}
           onRequestClose={() => setIsModalOpen(false)}
