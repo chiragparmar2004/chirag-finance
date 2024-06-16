@@ -31,10 +31,19 @@ export const updateSettlement = async (req, res) => {
     settlement.gpayAmount += gpayAmount;
     settlement.dueAmount = settlement.totalAmountDue - totalReceived;
 
-    console.log("Updated Settlement:", settlement);
-
     if (settlement.dueAmount <= 0) {
       settlement.isDueCleared = true;
+
+      // Remove settlement from user's dueSettlements array
+      const user = await User.findById(userId);
+      console.log(user, "on line 39");
+      if (user) {
+        const index = user.dueSettlements.indexOf(settlement._id);
+        if (index !== -1) {
+          user.dueSettlements.splice(index, 1);
+          await user.save();
+        }
+      }
     }
 
     // Save transaction history
@@ -50,22 +59,13 @@ export const updateSettlement = async (req, res) => {
     // Update the settlement
     await settlement.save();
 
-    // If due is not cleared, add to user's dueSettlements
-    if (!settlement.isDueCleared) {
-      const user = await User.findById(settlement.user);
-      console.log("User:", user);
-      if (!user.dueSettlements.includes(settlement._id)) {
-        user.dueSettlements.push(settlement._id);
-        await user.save();
-      }
-    }
-
+    // Update user's money accounts
     const user = await User.findById(userId);
-
-    user.money.cash += cashAmount;
-    user.money.bank += gpayAmount;
-
-    await user.save();
+    if (user) {
+      user.money.cash += cashAmount;
+      user.money.bank += gpayAmount;
+      await user.save();
+    }
 
     res.status(200).json({ success: true, data: settlement });
   } catch (error) {
@@ -93,19 +93,21 @@ export const getSettlementByDate = async (req, res) => {
     const { date } = req.params;
     console.log(`Requested date: ${date}`);
 
-    const startOfDay = new Date(date);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setUTCHours(23, 59, 59, 999);
+    // const startOfDay = new Date(date);
+    // startOfDay.setUTCHours(0, 0, 0, 0);
+    // const endOfDay = new Date(date);
+    // endOfDay.setUTCHours(23, 59, 59, 999);
 
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
     const settlement = await DailyCollectionSettlement.findOne({
       date: { $gte: startOfDay, $lt: endOfDay },
     });
 
     if (!settlement) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Settlement not found" });
+      sendResponse(res, 404, "settlement not found");
     }
 
     res.status(200).json({ success: true, data: settlement });

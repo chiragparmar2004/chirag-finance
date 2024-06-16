@@ -32,7 +32,6 @@ const LoanDetailPage = () => {
   const [loan, setLoan] = useState(null);
   const [emiData, setEmiData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(loan, "loanDetails");
   useEffect(() => {
     const fetchLoanData = async () => {
       try {
@@ -122,17 +121,21 @@ const LoanDetailPage = () => {
         </div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold"></h2>
+
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
             onClick={handleAddEmi}
+            className="w-1/8  cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
+border-blue-600
+border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
           >
             Add EMI
           </button>
         </div>
 
         <div className="">
-          <table className="w-full text-sm text-left bg-[#1e1e1e]">
-            <caption className="p-5 text-lg font-semibold text-left text-black">
+          <table className="w-full text-lg text-left bg-[#1e1e1e]">
+            <caption className="p-5 text-2xl font-semibold text-left text-white">
               EMI Payment Details
               <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
                 Explore your EMI payment records to stay updated with your
@@ -141,19 +144,34 @@ const LoanDetailPage = () => {
             </caption>
             <thead className="text-xl text-white text-center uppercase bg-[#1e1e1e]">
               <tr>
-                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                <th
+                  scope="col"
+                  className="py-3 px-4 border-b border-r  border-black"
+                >
                   Serial No.
                 </th>
-                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                <th
+                  scope="col"
+                  className="py-3 px-4 border-b border-r  border-black"
+                >
                   Date
                 </th>
-                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                <th
+                  scope="col"
+                  className="py-3 px-4 border-b border-r  border-black"
+                >
                   EMI Amount
                 </th>
-                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                <th
+                  scope="col"
+                  className="py-3 px-4 border-b border-r   border-black"
+                >
                   Payment Method
                 </th>
-                <th scope="col" className="py-3 px-4 border-b border-gray-200">
+                <th
+                  scope="col"
+                  className="py-3 px-4 border-b border-r  border-black"
+                >
                   Payment Date
                 </th>
               </tr>
@@ -165,24 +183,24 @@ const LoanDetailPage = () => {
                   <tr
                     key={index}
                     className={
-                      "bg-[#454545] shadow-custom-inset text-black text-2xl text-center"
+                      "bg-[#454545] shadow-custom-inset  text-black text-2xl text-center"
                     }
                   >
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-black border-b">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-black border-b border-r  border-black">
                       {index + 1}
                     </td>
-                    <td className="px-4 py-3 border-b">
+                    <td className="px-4 py-3 border-b border-r  border-black">
                       {format(date, "dd/MM/yyyy")}
                     </td>
-                    <td className="px-4 py-3 border-b">
+                    <td className="px-4 py-3 border-b border-r  border-black">
                       {emiEntry.amount !== undefined
                         ? `${emiEntry.amount}`
                         : ""}
                     </td>
-                    <td className="px-4 py-3 border-b">
+                    <td className="px-4 py-3 border-b border-r  border-black">
                       {emiEntry.paymentType || ""}
                     </td>
-                    <td className="px-4 py-3 border-b">
+                    <td className="px-4 py-3 border-b border-r  border-black">
                       {emiEntry.date
                         ? format(parseISO(emiEntry.date), "dd/MM/yyyy")
                         : ""}

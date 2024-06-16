@@ -113,25 +113,27 @@ const AddLoan = ({ onSubmit }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen ">
-      <div className="max-w-md w-full bg-[#454545] shadow-custom-inset   rounded-lg p-6">
+      <div className="max-w-md w-full bg-[#454545] shadow-custom-inset rounded-lg p-6">
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
           Add Loan
         </h1>
         <form onSubmit={handleSubmit} className="text-black">
           <div className="mb-4 relative">
-            <label className="block text-black text-sm font-bold mb-2">
-              Member Name
-            </label>
-            <input
-              type="text"
-              name="memberName"
-              value={formData.memberName}
-              onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter member name"
-            />
+            <div className="flex flex-col-reverse w-full">
+              <input
+                type="text"
+                name="memberName"
+                value={formData.memberName}
+                onChange={handleChange}
+                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
+                placeholder="Enter member name"
+              />
+              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
+                Member Name
+              </span>
+            </div>
             {memberSuggestions.length > 0 && (
-              <ul className="absolute w-full bg-gray-500 border border-gray-300 rounded mt-1 z-10">
+              <ul className="absolute w-full bg-white border border-gray-300 rounded mt-1 z-10">
                 {memberSuggestions.map((member) => (
                   <li
                     key={member._id}
@@ -144,72 +146,92 @@ const AddLoan = ({ onSubmit }) => {
               </ul>
             )}
           </div>
-          <div className="mb-4">
-            <label className="block text-black text-sm font-bold mb-2">
-              Amount
-            </label>
-            <input
-              type="text"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter custom amount"
-            />
-            <div className="flex mt-2 space-x-2">
+          <div className="mb-4 relative">
+            <div className="flex flex-col-reverse w-full">
+              <input
+                type="text"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
+                placeholder="Enter custom amount"
+              />
+              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
+                Amount
+              </span>
+            </div>
+            <div className="flex space-x-2 border-[1px] border-black rounded-md select-none mt-2">
               {defaultAmountOptions.map((option) => (
-                <div
+                <label
                   key={option}
-                  className="cursor-pointer bg-white hover:bg-blue-200 text-gray-500 border border-blue-300 rounded px-3 py-1"
-                  onClick={() => handleAmountOptionClick(option)}
+                  className="radio flex flex-grow items-center justify-center rounded-lg p-1 cursor-pointer"
                 >
-                  ₹{option}
-                </div>
+                  <input
+                    type="radio"
+                    name="amountOption"
+                    value={option}
+                    className="peer hidden"
+                    checked={formData.amount === option.toString()}
+                    onChange={() => handleAmountOptionClick(option)}
+                  />
+                  <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[#080808] peer-checked:to-[#000000] peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
+                    ₹{option}
+                  </span>
+                </label>
               ))}
             </div>
           </div>
-          <div className="mb-4">
-            <label className="block text-black text-sm font-bold mb-2">
-              Interest
-            </label>
-            <input
-              type="text"
-              name="interest"
-              value={formData.interest}
-              onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight "
-              placeholder="Enter interest amount"
-            />
+          <div className="mb-4 relative">
+            <div className="flex flex-col-reverse w-full">
+              <input
+                type="text"
+                name="interest"
+                value={formData.interest}
+                onChange={handleChange}
+                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
+                placeholder="Enter interest amount"
+              />
+              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
+                Interest
+              </span>
+            </div>
           </div>
-          <div className="mb-4">
-            <label className="block text-black text-sm font-bold mb-2">
-              Start Date
-            </label>
-            <input
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3  text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="mb-4 relative">
+            <div className="flex flex-col-reverse w-full">
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
+              />
+              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
+                Start Date
+              </span>
+            </div>
           </div>
-          <div className="mb-4">
-            <label className="block text-black text-sm font-bold mb-2">
-              End Date
-            </label>
-            <input
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled
-            />
+          <div className="mb-4 relative">
+            <div className="flex flex-col-reverse w-full">
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
+                disabled
+              />
+              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
+                End Date
+              </span>
+            </div>
           </div>
           <div className="flex items-center justify-center">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full  cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
+border-blue-600
+border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
             >
               Add Loan
             </button>

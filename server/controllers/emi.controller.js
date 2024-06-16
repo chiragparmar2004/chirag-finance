@@ -150,8 +150,7 @@ export const addEMI = async (req, res) => {
 
     // Create new EMIs for the bulk payment
     const newEMIs = [];
-    let currentDate = Date.now(); // Current timestamp
-    currentDate.setDate(currentDate.getDate() - 2); // Set to 2 days before the current date
+    let currentDate = Date.now(); // Returns the current timestamp in milliseconds
 
     // Add the first EMI entry with the full payment amount
     const firstEMI = new EMI({
@@ -165,7 +164,6 @@ export const addEMI = async (req, res) => {
 
     // Add subsequent EMI entries with zero amounts
     for (let i = 1; i < numberOfDays; i++) {
-      currentDate = Date.now(); // Update to current timestamp for each subsequent EMI
       const newEMI = new EMI({
         amount: 0,
         paymentType,
@@ -199,9 +197,9 @@ export const addEMI = async (req, res) => {
     } else {
       // Update DailyCollectionSettlement if payment type is not gpay
       const startOfDay = new Date(currentDate);
-      startOfDay.setUTCHours(0, 0, 0, 0);
+      startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(currentDate);
-      endOfDay.setUTCHours(23, 59, 59, 999);
+      endOfDay.setHours(23, 59, 59, 999);
 
       let dailyCollection = await DailyCollectionSettlement.findOne({
         date: { $gte: startOfDay, $lt: endOfDay },
