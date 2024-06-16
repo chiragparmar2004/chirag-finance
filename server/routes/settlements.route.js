@@ -1,13 +1,19 @@
 import express from "express";
 import {
-  createSettlement,
+  getSettlementByDate,
   getSettlements,
+  getTransactionHistoryBySettlementId,
+  getUserDueSettlements,
+  updateSettlement,
 } from "../controllers/dailyCollectionSettlement.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
-router.post("/create", verifyToken, createSettlement);
-router.get("/", verifyToken, getSettlements);
+router.put("/update/:id", verifyToken, updateSettlement);
+router.get("/get", verifyToken, getSettlements);
+router.get("/settlementByDate/:date", verifyToken, getSettlementByDate);
+router.get("/dueSettlements", verifyToken, getUserDueSettlements);
+router.get("/history/:settlementId", getTransactionHistoryBySettlementId);
 
 export default router;

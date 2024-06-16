@@ -1,4 +1,3 @@
-import { useState } from "react";
 import apiRequest from "../../lib/apiRequest";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -24,9 +23,11 @@ const AddMember = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-200 pt-20 ">
-      <div className="bg-white rounded px-8 pt-6 pb-8 w-full max-w-md shadow-md">
-        <h2 className="text-2xl font-bold mb-10 text-center">Add Member</h2>
+    <div className="flex items-center justify-center min-h-full">
+      <div className="bg-[#454545] rounded-lg shadow-custom-inset  px-8 pt-6 pb-8 w-full max-w-md ">
+        <h2 className="text-2xl font-bold mb-10 text-center text-black">
+          Add Member
+        </h2>
 
         <form className="w-full max-w-sm" onSubmit={handleSubmit}>
           <div className="md:flex md:items-center mb-6">
@@ -64,7 +65,7 @@ const AddMember = () => {
             <div className="md:w-1/3"></div>
             <div className="md:w-2/3">
               <button
-                className="shadow bg-[#3b82f6] hover:bg-[#3b82f6] focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                className="shadow bg-[#3b82f6] hover:bg-[#3b82f6] focus:shadow-outline focus:outline-none text-black font-bold py-2 px-4 rounded"
                 type="submit"
               >
                 Add Member

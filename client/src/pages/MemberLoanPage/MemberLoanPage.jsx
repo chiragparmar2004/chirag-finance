@@ -40,7 +40,7 @@ const MemberLoanPage = () => {
   // console.log(loans[0]._id);
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-4 text-white ">
+      <h1 className="text-2xl font-bold mb-4 text-black ">
         Active Loans for{" "}
         <span className="text-3xl text-[#0085ff]">{member.name}</span>
       </h1>{" "}
@@ -55,14 +55,14 @@ const MemberLoanPage = () => {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-2xl font-semibold text-white mb-1">
+                    <h3 className="text-2xl font-semibold text-black mb-1">
                       Loan ID: {loan._id}
                     </h3>
-                    <p className="text-white">
+                    <p className="text-black">
                       Start Date :{" "}
                       {format(parseISO(loan.startDate), "dd-MM-yyyy")}
                     </p>
-                    <p className="text-2xl text-white">
+                    <p className="text-2xl text-black">
                       Amount: ₹{loan.amount}
                     </p>
                   </div>

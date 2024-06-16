@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
-
 const DailyCollectionSettlementSchema = new Schema({
   date: {
     type: Date,
@@ -9,7 +8,7 @@ const DailyCollectionSettlementSchema = new Schema({
   },
   totalAmountDue: {
     type: Number,
-    required: true,
+    // required: true,
   },
   amountReceived: {
     type: Number,
@@ -32,6 +31,10 @@ const DailyCollectionSettlementSchema = new Schema({
   dueAmount: {
     type: Number,
     default: 0,
+  },
+  isDueCleared: {
+    type: Boolean,
+    default: false,
   },
 });
 

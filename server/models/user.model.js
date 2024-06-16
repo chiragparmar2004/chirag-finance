@@ -1,4 +1,3 @@
-// user.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -16,16 +15,32 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    money: {
+      cash: { type: Number, default: 0 },
+      bank: { type: Number, default: 0 },
+    },
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Member",
       },
     ],
+    dailySettlements: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DailyCollectionSettlement",
+      },
+    ],
     receivedPayments: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "EMI",
+      },
+    ],
+    dueSettlements: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DailyCollectionSettlement",
       },
     ],
   },

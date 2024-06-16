@@ -3,6 +3,10 @@ import sendResponse from "../lib/responseHelper.js";
 import EMI from "../models/emi.model.js";
 import Loan from "../models/loan.model.js";
 
+import { addDays } from "date-fns";
+import User from "../models/user.model.js";
+import DailyCollectionSettlement from "../models/dailyCollectionSettlement.model.js";
+
 export const getEMIs = async (req, res) => {
   try {
     const { loanId } = req.params;
@@ -22,82 +26,15 @@ export const getEMIs = async (req, res) => {
   }
 };
 
-import { addDays } from "date-fns";
-import User from "../models/user.model.js";
-
-//TODO
-// export const addEMI = async (req, res) => {
-//   try {
-//     const { loanId } = req.params;
-//     const { amount, paymentType } = req.body;
-
-//     // Find the loan
-//     const loan = await Loan.findById(loanId);
-//     if (!loan) {
-//       return sendResponse(res, 404, "Loan not found");
-//     }
-
-//     // Calculate daily EMI amount
-//     const dailyEMIAmount = loan.amount / 100; // Assuming 100 days for simplicity
-
-//     // Calculate how many days this amount covers
-//     const numberOfDays = Math.floor(amount / dailyEMIAmount);
-
-//     // Create new EMIs for the bulk payment
-//     const newEMIs = [];
-//     let remainingAmount = amount;
-//     let currentDate = new Date();
-
-//     for (let i = 0; i < numberOfDays; i++) {
-//       const emiAmount = dailyEMIAmount;
-//       const newEMI = new EMI({
-//         amount: emiAmount,
-//         paymentType: paymentType,
-//         date: currentDate,
-//         loan: loanId,
-//       });
-//       await newEMI.save();
-//       newEMIs.push(newEMI._id);
-//       remainingAmount -= emiAmount;
-//       // currentDate = addDays(currentDate, 1);
-//     }
-
-//     // Add the remaining amount as the last EMI if any
-//     if (remainingAmount > 0) {
-//       const newEMI = new EMI({
-//         amount: remainingAmount,
-//         paymentType: paymentType,
-//         date: currentDate,
-//         loan: loanId,
-//       });
-//       await newEMI.save();
-//       newEMIs.push(newEMI._id);
-//     }
-
-//     // Update loan details
-//     loan.collectedMoney = (loan.collectedMoney || 0) + amount;
-//     loan.lastPaymentDate = new Date();
-//     loan.emis = loan.emis.concat(newEMIs);
-
-//     // Save the updated loan details
-//     await loan.save();
-
-//     // Send a success response
-//     sendResponse(res, 201, "Bulk payment added successfully", loan);
-//   } catch (error) {
-//     console.log("error in addEMI", error.message);
-//     sendResponse(res, 500, "error in addEMI");
-//   }
-// };
-
 //Todo:Complete runnig below
+
 // export const addEMI = async (req, res) => {
 //   try {
 //     const { loanId } = req.params;
 //     const { amount, paymentType } = req.body;
 
 //     // Find the loan
-//     const loan = await Loan.findById(loanId);
+//     const loan = await Loan.findById(loanId).populate("member");
 //     if (!loan) {
 //       return sendResponse(res, 404, "Loan not found");
 //     }
@@ -110,12 +47,13 @@ import User from "../models/user.model.js";
 
 //     // Create new EMIs for the bulk payment
 //     const newEMIs = [];
-//     let currentDate = new Date();
+//     let currentDate = Date.now(); // Current timestamp
+//     console.log(currentDate, "currentDate");
 
 //     // Add the first EMI entry with the full payment amount
 //     const firstEMI = new EMI({
-//       amount: amount,
-//       paymentType: paymentType,
+//       amount,
+//       paymentType,
 //       date: currentDate,
 //       loan: loanId,
 //     });
@@ -124,10 +62,10 @@ import User from "../models/user.model.js";
 
 //     // Add subsequent EMI entries with zero amounts
 //     for (let i = 1; i < numberOfDays; i++) {
-//       currentDate = new Date(currentDate.setDate(currentDate.getDate()));
+//       currentDate = Date.now(); // Update to current timestamp for each subsequent EMI
 //       const newEMI = new EMI({
 //         amount: 0,
-//         paymentType: paymentType,
+//         paymentType,
 //         date: currentDate,
 //         loan: loanId,
 //       });
@@ -142,17 +80,54 @@ import User from "../models/user.model.js";
 
 //     // Check if the loan is fully paid
 //     if (loan.collectedMoney >= loan.amount) {
-//       loan.status = "complete"; // Assuming 'complete' is the status for fully paid loans
+//       loan.status = "Paid"; // Updated status to "Paid"
 //     }
 
 //     // Save the updated loan details
 //     await loan.save();
 
+//     // Update the user's receivedPayments array
+//     const user = await User.findById(loan.member.user);
+//     user.receivedPayments.push(newEMIs[0]);
+//     await user.save();
+
+//     const startOfDay = new Date(currentDate);
+//     startOfDay.setUTCHours(0, 0, 0, 0);
+//     const endOfDay = new Date(currentDate);
+//     endOfDay.setUTCHours(23, 59, 59, 999);
+
+//     // Update DailyCollectionSettlement
+//     const dailyCollection = await DailyCollectionSettlement.findOne({
+//       date: { $gte: startOfDay, $lt: endOfDay },
+//     });
+
+//     console.log(dailyCollection, "on line 230 emi");
+//     if (dailyCollection) {
+//       dailyCollection.totalAmountDue += amount;
+//       dailyCollection.dueAmount += amount;
+
+//       dailyCollection.date = currentDate;
+
+//       await dailyCollection.save();
+//     } else {
+//       const newDailyCollection = new DailyCollectionSettlement({
+//         date: currentDate,
+//         totalAmountDue: amount,
+//         amountReceived: 0,
+//         paymentType,
+//         cashAmount: 0,
+//         gpayAmount: 0,
+//         dueAmount: amount,
+//         isDueCleared: false,
+//       });
+//       await newDailyCollection.save();
+//       console.log(newDailyCollection);
+//     }
 //     // Send a success response
 //     sendResponse(res, 201, "Bulk payment added successfully", loan);
 //   } catch (error) {
 //     console.log("error in addEMI", error.message);
-//     sendResponse(res, 500, "error in addEMI");
+//     sendResponse(res, 500, "Error in addEMI");
 //   }
 // };
 
@@ -175,7 +150,8 @@ export const addEMI = async (req, res) => {
 
     // Create new EMIs for the bulk payment
     const newEMIs = [];
-    let currentDate = new Date();
+    let currentDate = Date.now(); // Current timestamp
+    currentDate.setDate(currentDate.getDate() - 2); // Set to 2 days before the current date
 
     // Add the first EMI entry with the full payment amount
     const firstEMI = new EMI({
@@ -189,7 +165,7 @@ export const addEMI = async (req, res) => {
 
     // Add subsequent EMI entries with zero amounts
     for (let i = 1; i < numberOfDays; i++) {
-      currentDate = new Date(currentDate.setDate(currentDate.getDate()));
+      currentDate = Date.now(); // Update to current timestamp for each subsequent EMI
       const newEMI = new EMI({
         amount: 0,
         paymentType,
@@ -216,6 +192,45 @@ export const addEMI = async (req, res) => {
     // Update the user's receivedPayments array
     const user = await User.findById(loan.member.user);
     user.receivedPayments.push(newEMIs[0]);
+
+    // If payment type is gpay, add the money to user's gpay field
+    if (paymentType === "GPay") {
+      user.money.bank += amount;
+    } else {
+      // Update DailyCollectionSettlement if payment type is not gpay
+      const startOfDay = new Date(currentDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const endOfDay = new Date(currentDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      let dailyCollection = await DailyCollectionSettlement.findOne({
+        date: { $gte: startOfDay, $lt: endOfDay },
+      });
+
+      if (dailyCollection) {
+        dailyCollection.totalAmountDue += amount;
+        dailyCollection.dueAmount += amount;
+      } else {
+        dailyCollection = new DailyCollectionSettlement({
+          date: currentDate,
+          totalAmountDue: amount,
+          amountReceived: 0,
+          paymentType,
+          cashAmount: 0,
+          gpayAmount: 0,
+          dueAmount: amount,
+          isDueCleared: false,
+        });
+      }
+
+      await dailyCollection.save();
+
+      // Add the daily settlement to the user's dueSettlements array
+      if (!user.dueSettlements.includes(dailyCollection._id)) {
+        user.dueSettlements.push(dailyCollection._id);
+      }
+    }
+
     await user.save();
 
     // Send a success response

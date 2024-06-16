@@ -15,7 +15,8 @@
 
 .content {
   margin-left: 250px; /* Same value as the sidebar width */
-  background-color: #1e1e1e; /* Example background color */
+  background-color: #2d2d2d; /* Example background color */
+  color: black;
   padding: 20px; /* Add some padding if necessary */
   flex-grow: 1;
 }

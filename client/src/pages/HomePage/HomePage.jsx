@@ -36,6 +36,7 @@ const HomePage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
+
       <MemberList members={filteredMembers} />
     </div>
   );

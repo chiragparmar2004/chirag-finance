@@ -114,12 +114,12 @@ const AddLoan = ({ onSubmit }) => {
   return (
     <div className="flex items-center justify-center min-h-screen ">
       <div className="max-w-md w-full bg-[#454545] shadow-custom-inset   rounded-lg p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center text-white">
+        <h1 className="text-3xl font-bold mb-6 text-center text-black">
           Add Loan
         </h1>
-        <form onSubmit={handleSubmit} className="text-white">
+        <form onSubmit={handleSubmit} className="text-black">
           <div className="mb-4 relative">
-            <label className="block text-white text-sm font-bold mb-2">
+            <label className="block text-black text-sm font-bold mb-2">
               Member Name
             </label>
             <input
@@ -145,7 +145,7 @@ const AddLoan = ({ onSubmit }) => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block text-white text-sm font-bold mb-2">
+            <label className="block text-black text-sm font-bold mb-2">
               Amount
             </label>
             <input
@@ -169,7 +169,7 @@ const AddLoan = ({ onSubmit }) => {
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-white text-sm font-bold mb-2">
+            <label className="block text-black text-sm font-bold mb-2">
               Interest
             </label>
             <input
@@ -182,7 +182,7 @@ const AddLoan = ({ onSubmit }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-white text-sm font-bold mb-2">
+            <label className="block text-black text-sm font-bold mb-2">
               Start Date
             </label>
             <input
@@ -194,7 +194,7 @@ const AddLoan = ({ onSubmit }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-white text-sm font-bold mb-2">
+            <label className="block text-black text-sm font-bold mb-2">
               End Date
             </label>
             <input
@@ -202,14 +202,14 @@ const AddLoan = ({ onSubmit }) => {
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              className="appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled
             />
           </div>
           <div className="flex items-center justify-center">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-white text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-blue-600 hover:bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Add Loan
             </button>

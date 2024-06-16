@@ -97,7 +97,7 @@ const LoanDetailPage = () => {
   return (
     <div className="">
       <div className="container mx-auto py-8">
-        <div className="bg-[#454545] shadow-custom-inset p-4 rounded-lg mb-8 text-white">
+        <div className="bg-[#454545] shadow-custom-inset p-4 rounded-lg mb-8 text-black">
           <h2 className="text-2xl font-bold mb-4">Loan ID: {loan._id}</h2>
           <p className="mb-2">
             <strong>Member ID:</strong> {loan.member}
@@ -123,55 +123,16 @@ const LoanDetailPage = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold"></h2>
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
             onClick={handleAddEmi}
           >
             Add EMI
           </button>
         </div>
-        {/* <div className="bg-white p-4 rounded-md shadow-md">
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b">Serial Number</th>
-                  <th className="py-2 px-4 border-b">Date</th>
-                  <th className="py-2 px-4 border-b">EMI Amount</th>
-                  <th className="py-2 px-4 border-b">Payment Method</th>
-                  <th className="py-2 px-4 border-b">Payment Date</th>
-                </tr>
-              </thead>
-              <tbody className="text-2xl text-center ">
-                {dateRange.map((date, index) => {
-                  const emiEntry = emiData[index] || {};
-                  return (
-                    <tr key={index}>
-                      <td className="py-2 px-4 border-b">{index + 1}</td>
-                      <td className="py-2 px-4 border-b">
-                        {format(date, "dd-MM-yyyy")}
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        {emiEntry.amount !== undefined ? emiEntry.amount : ""}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center ">
-                        {renderPaymentMethodIcon(emiEntry.paymentType)}
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        {emiEntry.date
-                          ? format(parseISO(emiEntry.date), "dd-MM-yyyy")
-                          : ""}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div> */}
 
         <div className="">
           <table className="w-full text-sm text-left bg-[#1e1e1e]">
-            <caption className="p-5 text-lg font-semibold text-left text-white">
+            <caption className="p-5 text-lg font-semibold text-left text-black">
               EMI Payment Details
               <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
                 Explore your EMI payment records to stay updated with your
@@ -204,10 +165,10 @@ const LoanDetailPage = () => {
                   <tr
                     key={index}
                     className={
-                      "bg-[#454545] shadow-custom-inset text-white text-2xl text-center"
+                      "bg-[#454545] shadow-custom-inset text-black text-2xl text-center"
                     }
                   >
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white border-b">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-black border-b">
                       {index + 1}
                     </td>
                     <td className="px-4 py-3 border-b">

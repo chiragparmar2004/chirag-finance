@@ -7,11 +7,11 @@ const Navbar = () => {
   const { currentUser } = useContext(AuthContext);
   const getLinkClass = (path) =>
     location.pathname === path
-      ? "text-white rounded-2xl  border-b-2 border-white my-2 sm:my-0 bg-[#0085ff] py-2 px-4" // Added padding and background color
-      : "text-black border-b-2 border-transparent     hover:bg-[#0085ff] hover:rounded-2xl my-2  py-2 px-4"; // Added padding
+      ? "text-white rounded-2xl border-b-2 border-white my-2 sm:my-0 bg-[##658864] py-2 px-4 transition duration-300 transform hover:scale-105 hover:shadow-lg" // Added padding, background color, hover effect, and shadow
+      : "text-white border-b-2 border-transparent hover:bg-[#0085ff] hover:rounded-2xl my-2 py-2 px-4 transition duration-300 transform hover:scale-105 hover:shadow-md"; // Added padding, hover effect, and shadow
 
   return (
-    <nav className="text-2xl fixed top-0 left-0 h-[90%]  border-r-2 mt-10 pb-4">
+    <nav className="text-2xl fixed top-0 left-0 h-[90%]   mt-10 pb-4">
       <div className="container flex flex-col p-6 mx-auto text-white capitalize dark:text-gray-300">
         <Link to="/" className={getLinkClass("/")}>
           Home
@@ -31,6 +31,9 @@ const Navbar = () => {
 
         <Link to="/payments" className={getLinkClass("/payments")}>
           Payments
+        </Link>
+        <Link to="/settlements" className={getLinkClass("/settlements")}>
+          settlements
         </Link>
 
         {currentUser ? (
