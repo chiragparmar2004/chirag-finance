@@ -13,6 +13,7 @@ const AddLoan = ({ onSubmit }) => {
     interest: "",
     startDate: "",
     endDate: "",
+    paymentType: "", // Added paymentType field
   });
   const [debouncedInput, setDebouncedInput] = useState("");
 
@@ -84,11 +85,12 @@ const AddLoan = ({ onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { memberId, amount, interest, startDate } = formData;
+      const { memberId, amount, interest, startDate, paymentType } = formData;
       const response = await apiRequest().post(`/loan/${memberId}`, {
         amount,
         interest,
         startDate,
+        paymentType, // Include paymentType in the request
       });
 
       if (response.status === 201) {
@@ -100,19 +102,25 @@ const AddLoan = ({ onSubmit }) => {
           interest: "",
           startDate: "",
           endDate: "",
+          paymentType: "", // Reset paymentType
         });
-        navigate("/");
+        navigate("/home_page");
       } else {
-        toast.error("Failed to add loan. Please try again.");
+        const errorMessage =
+          response.data?.message || "Failed to add loan. Please try again.";
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Error adding loan:", error);
-      toast.error("Failed to add loan. Please try again.");
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to add loan. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
+    <div className="flex items-center justify-center min-h-screen">
       <div className="max-w-md w-full bg-[#454545] shadow-custom-inset rounded-lg p-6">
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
           Add Loan
@@ -225,13 +233,41 @@ const AddLoan = ({ onSubmit }) => {
               </span>
             </div>
           </div>
+          <div className="mb-4 relative">
+            {/* <label className="block text-blue-700 mb-2">Payment Type</label> */}
+            <div className="flex space-x-2 border-[1px] border-black rounded-md select-none justify-around ">
+              <label className="radio flex items-center justify-center rounded-lg p-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="paymentType"
+                  value="cash"
+                  className="peer hidden"
+                  checked={formData.paymentType === "cash"}
+                  onChange={handleChange}
+                />
+                <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[#080808] peer-checked:to-[#000000] peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
+                  Cash
+                </span>
+              </label>
+              <label className="radio flex items-center justify-center rounded-lg p-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="paymentType"
+                  value="gpay"
+                  className="peer hidden"
+                  checked={formData.paymentType === "gpay"}
+                  onChange={handleChange}
+                />
+                <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[#080808] peer-checked:to-[#000000] peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
+                  GPay
+                </span>
+              </label>
+            </div>
+          </div>
           <div className="flex items-center justify-center">
             <button
               type="submit"
-              className="w-full  cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
-border-blue-600
-border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+              className="w-full cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
             >
               Add Loan
             </button>

@@ -53,9 +53,9 @@ const AddEmiModal = ({ isOpen, onRequestClose, onSubmit }) => {
                 <input
                   type="radio"
                   name="paymentMethod"
-                  value="Cash"
+                  value="cash"
                   className="peer hidden"
-                  checked={paymentMethod === "Cash"}
+                  checked={paymentMethod === "cash"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                 />
                 <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[#000000] peer-checked:to-[#000000] peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">

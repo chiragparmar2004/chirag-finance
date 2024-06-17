@@ -6,7 +6,7 @@ import getUserToken from "./getUserToken";
 const apiRequest = () => {
   // Get the user token
   const userToken = getUserToken();
-  console.log(userToken);
+  // console.log(userToken);
 
   // Create Axios instance with user token
   const instance = axios.create({

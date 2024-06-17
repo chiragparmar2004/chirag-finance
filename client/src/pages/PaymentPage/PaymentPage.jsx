@@ -21,6 +21,7 @@ const PaymentsPage = () => {
     try {
       setLoading(true);
       const response = await apiRequest().get("/payments/receivedPayments");
+      // console.log("response: ", response);
       setPayments(response.data.data);
       setLoading(false);
     } catch (error) {

@@ -17,7 +17,7 @@ const DailyCollectionSettlementSchema = new Schema({
   },
   paymentType: {
     type: String,
-    enum: ["Cash", "GPay", "Both"],
+    enum: ["cash", "GPay", "Both"],
     required: true,
   },
   cashAmount: {

@@ -34,7 +34,7 @@ const Login = () => {
       updateUser(res.data);
       toast.success("Login successfully");
 
-      navigate("/");
+      navigate("/home_page");
     } catch (err) {
       setError("Login failed. Please try again.");
     } finally {

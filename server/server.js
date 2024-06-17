@@ -6,6 +6,8 @@ import loanRoute from "./routes/loan.route.js";
 import emiRoute from "./routes/emi.route.js";
 import paymentRoute from "./routes/payments.route.js";
 import settlementRoute from "./routes/settlements.route.js";
+import dashboardRoutes from "./routes/dashboard.route.js";
+
 import cors from "cors";
 import "dotenv/config";
 
@@ -27,6 +29,7 @@ app.use("/api/loan", loanRoute);
 app.use("/api/emi", emiRoute);
 app.use("/api/payments", paymentRoute);
 app.use("/api/settlement", settlementRoute);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.listen(PORT, () => {
   console.log(`server listening on port ${PORT}`);

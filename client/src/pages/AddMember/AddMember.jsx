@@ -15,7 +15,7 @@ const AddMember = () => {
         mobileNumber: inputs.mobileNumber,
       });
       toast.success("Member added successfully");
-      navigate("/");
+      navigate("/home_page");
     } catch (error) {
       console.log(error, "error in addMember");
       toast.error("Something went wrong");

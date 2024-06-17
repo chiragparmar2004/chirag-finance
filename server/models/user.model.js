@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    interestEarned: {
+      type: Number,
+      default: 0,
+    },
+    totalLoanGiven: {
+      type: Number,
+      default: 0,
+    },
     money: {
       cash: { type: Number, default: 0 },
       bank: { type: Number, default: 0 },

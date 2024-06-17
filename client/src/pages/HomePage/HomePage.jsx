@@ -26,7 +26,7 @@ const HomePage = () => {
   );
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="mx-auto py-8">
       <div className="mb-4">
         <h2 className="text-3xl font-bold text-white mb-6 text-center">
           All Members

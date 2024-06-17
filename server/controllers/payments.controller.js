@@ -29,7 +29,6 @@ export const getAllReceivedPayments = async (req, res) => {
     });
   }
 };
-
 // Fetch payments received on a specific date
 export const getPaymentsByDate = async (req, res) => {
   try {

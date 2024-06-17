@@ -32,11 +32,14 @@ const LoanSchema = new mongoose.Schema({
   nextPaymentDate: {
     type: Date,
   },
+  receivedEMIsUntilDate: { type: Date }, // Date until which EMIs have been received
+
   member: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Member",
+    ref: "Member", // Make sure it matches the name of the Member model
     required: true,
   },
+
   emis: [
     {
       type: mongoose.Schema.Types.ObjectId,
