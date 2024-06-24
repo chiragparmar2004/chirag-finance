@@ -1,4 +1,8 @@
+import React from "react";
 import { Doughnut } from "react-chartjs-2";
+import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
+
+Chart.register(ArcElement, Tooltip, Legend);
 
 const DoughnutChart = ({ collectedAmount, totalAmount }) => {
   const data = {
@@ -10,8 +14,7 @@ const DoughnutChart = ({ collectedAmount, totalAmount }) => {
         borderWidth: 1,
         borderRadius: 30,
         spacing: 3,
-        cutout: 105,
-        dataVisibility: true,
+        cutout: 100,
       },
     ],
   };
@@ -22,10 +25,29 @@ const DoughnutChart = ({ collectedAmount, totalAmount }) => {
       legend: {
         position: "top",
       },
+      // Custom plugin to add text in the center
+      beforeDraw: (chart) => {
+        const {
+          ctx,
+          chartArea: { width, height },
+        } = chart;
+        ctx.save();
+        ctx.font = "bold 16px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#000";
+        const text = `${collectedAmount} / ${totalAmount}`;
+        ctx.fillText(text, width / 2, height / 2);
+        ctx.restore();
+      },
     },
   };
 
-  return <Doughnut data={data} options={options} />;
+  return (
+    <div className="flex justify-center items-center">
+      <Doughnut data={data} options={options} />
+    </div>
+  );
 };
 
 export default DoughnutChart;

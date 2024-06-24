@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import sendResponse from "../lib/responseHelper.js";
 import Member from "../models/member.model.js";
 import User from "../models/user.model.js";
+import Loan from "../models/loan.model.js";
 
 export const addMember = async (req, res) => {
   try {
@@ -93,27 +94,18 @@ export const dashboardDetails = async (req, res) => {
   }
 };
 
-export const getMembersWithPendingEMIs = async (req, res) => {
-  console.log("her e");
+export const getPendingEmis = async (req, res) => {
   try {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
-    console.log(sevenDaysAgo.toString());
-    // Find all members who have loans with receivedEMIsUntilDate older than 7 days ago
-    const members = await Member.find({
-      "loans.receivedEMIsUntilDate": { $lt: sevenDaysAgo },
-    }).populate({
-      path: "loans",
-      match: { receivedEMIsUntilDate: { $lt: sevenDaysAgo } },
-    });
-    console.log(members);
-    sendResponse(
-      res,
-      200,
-      "Members with pending EMIs retrieved successfully",
-      members
-    );
+    // Fetch all loans with pending EMIs
+    const loans = await Loan.find({ status: "Pending" });
+    // Handle case where no loans found
+    if (!loans.length) {
+      return sendResponse(res, 404, "No pending EMIs found");
+    }
+    // Send success response with loans
+    sendResponse(res, 200, "Pending EMIs retrieved successfully", loans);
   } catch (error) {
-    console.log("error in getMembersWithPendingEMIs", error.message);
-    sendResponse(res, 500, "Error in getMembersWithPendingEMIs");
+    console.error("Error fetching pending EMIs:", error.message);
+    sendResponse(res, 500, "Internal Server Error");
   }
 };

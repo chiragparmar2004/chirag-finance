@@ -7,7 +7,7 @@ import emiRoute from "./routes/emi.route.js";
 import paymentRoute from "./routes/payments.route.js";
 import settlementRoute from "./routes/settlements.route.js";
 import dashboardRoutes from "./routes/dashboard.route.js";
-
+import transactionRoutes from "./routes/transactionRoutes.js";
 import cors from "cors";
 import "dotenv/config";
 
@@ -30,6 +30,7 @@ app.use("/api/emi", emiRoute);
 app.use("/api/payments", paymentRoute);
 app.use("/api/settlement", settlementRoute);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api", transactionRoutes); // Add this line to include the transaction routes
 
 app.listen(PORT, () => {
   console.log(`server listening on port ${PORT}`);

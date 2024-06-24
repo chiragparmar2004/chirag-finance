@@ -1,4 +1,6 @@
+import sendResponse from "../lib/responseHelper.js";
 import DailyCollectionSettlement from "../models/dailyCollectionSettlement.model.js";
+import moneyTransactionHistory from "../models/moneyTransactionHistory.model.js";
 import TransactionHistory from "../models/transactionHistory.model.js";
 import User from "../models/user.model.js";
 
@@ -8,12 +10,7 @@ export const updateSettlement = async (req, res) => {
     const userId = req.userId;
     const { cashAmount, gpayAmount } = req.body;
 
-    console.log("Settlement ID:", id);
-    console.log("Cash Amount:", cashAmount);
-    console.log("GPay Amount:", gpayAmount);
-
     const settlement = await DailyCollectionSettlement.findById(id);
-    console.log("Settlement:", settlement);
 
     if (!settlement) {
       console.log("Settlement not found");
@@ -24,8 +21,6 @@ export const updateSettlement = async (req, res) => {
 
     // Update amounts
     const totalReceived = settlement.amountReceived + cashAmount + gpayAmount;
-    console.log("Total Received:", totalReceived);
-
     settlement.amountReceived = totalReceived;
     settlement.cashAmount += cashAmount;
     settlement.gpayAmount += gpayAmount;
@@ -36,7 +31,6 @@ export const updateSettlement = async (req, res) => {
 
       // Remove settlement from user's dueSettlements array
       const user = await User.findById(userId);
-      console.log(user, "on line 39");
       if (user) {
         const index = user.dueSettlements.indexOf(settlement._id);
         if (index !== -1) {
@@ -46,26 +40,36 @@ export const updateSettlement = async (req, res) => {
       }
     }
 
-    // Save transaction history
-    const transaction = new TransactionHistory({
-      date: new Date(),
-      amount: cashAmount + gpayAmount,
-      paymentType: { cash: cashAmount, gpay: gpayAmount },
-      settlement: id,
+    // Create and save transaction histories
+
+    const cashTransaction = new moneyTransactionHistory({
+      amount: cashAmount,
+      type: "credit",
+      purpose: "Cash payment for settlement",
     });
-    console.log("Transaction:", transaction);
-    await transaction.save();
-
-    // Update the settlement
-    await settlement.save();
-
-    // Update user's money accounts
+    if (cashAmount > 0) {
+      await cashTransaction.save();
+    }
+    const gpayTransaction = new moneyTransactionHistory({
+      amount: gpayAmount,
+      type: "credit",
+      purpose: "GPay payment for settlement",
+    });
+    if (gpayAmount > 0) {
+      await gpayTransaction.save();
+    }
+    // Update user's money accounts and add transactions to user's history
     const user = await User.findById(userId);
     if (user) {
       user.money.cash += cashAmount;
       user.money.bank += gpayAmount;
+      user.money.transactions.push(cashTransaction._id);
+      user.money.transactions.push(gpayTransaction._id);
       await user.save();
     }
+
+    // Update the settlement
+    await settlement.save();
 
     res.status(200).json({ success: true, data: settlement });
   } catch (error) {
@@ -92,11 +96,6 @@ export const getSettlementByDate = async (req, res) => {
   try {
     const { date } = req.params;
     console.log(`Requested date: ${date}`);
-
-    // const startOfDay = new Date(date);
-    // startOfDay.setUTCHours(0, 0, 0, 0);
-    // const endOfDay = new Date(date);
-    // endOfDay.setUTCHours(23, 59, 59, 999);
 
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);

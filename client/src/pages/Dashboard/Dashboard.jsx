@@ -36,7 +36,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchMembersWithPendingEMIs = async () => {
       try {
-        const response = await apiRequest().get("/user/pendingEmi");
+        const response = await apiRequest().get(
+          "/loan/66720638d4b329950c678a79"
+        );
         console.log(response);
         setMembersWithPendingEMIs(response.data);
       } catch (error) {

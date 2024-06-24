@@ -86,7 +86,7 @@ const AddLoan = ({ onSubmit }) => {
     e.preventDefault();
     try {
       const { memberId, amount, interest, startDate, paymentType } = formData;
-      const response = await apiRequest().post(`/loan/${memberId}`, {
+      const response = await apiRequest().post(`/loan/addLoan/${memberId}`, {
         amount,
         interest,
         startDate,
@@ -204,35 +204,38 @@ const AddLoan = ({ onSubmit }) => {
               </span>
             </div>
           </div>
-          <div className="mb-4 relative">
-            <div className="flex flex-col-reverse w-full">
-              <input
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-              />
-              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
-                Start Date
-              </span>
+          <div className="flex justify-between items-center">
+            <div className="flex mb-4  relative">
+              <div className="flex flex-col-reverse w-full">
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
+                />
+                <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
+                  Start Date
+                </span>
+              </div>
+            </div>
+            <div className="flex mb-4 relative">
+              <div className="flex flex-col-reverse w-full">
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
+                  disabled
+                />
+                <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
+                  End Date
+                </span>
+              </div>
             </div>
           </div>
-          <div className="mb-4 relative">
-            <div className="flex flex-col-reverse w-full">
-              <input
-                type="date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-                disabled
-              />
-              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
-                End Date
-              </span>
-            </div>
-          </div>
+
           <div className="mb-4 relative">
             {/* <label className="block text-blue-700 mb-2">Payment Type</label> */}
             <div className="flex space-x-2 border-[1px] border-black rounded-md select-none justify-around ">

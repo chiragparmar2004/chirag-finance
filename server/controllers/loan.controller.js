@@ -5,6 +5,7 @@ import Member from "../models/member.model.js";
 import EMI from "../models/emi.model.js";
 import User from "../models/user.model.js";
 import { format, addDays, parseISO } from "date-fns";
+import mongoose from "mongoose";
 
 export const addLoan = async (req, res) => {
   try {
@@ -79,13 +80,14 @@ export const addLoan = async (req, res) => {
     sendResponse(res, 500, "Error in addLoan");
   }
 };
-
 export const getLoans = async (req, res) => {
   try {
     const { memberId } = req.params;
 
     // Retrieve all loans for the member
-    const loans = await Loan.find({ member: memberId }).populate("emis");
+    const loans = await Loan.find({
+      member: new mongoose.Types.ObjectId(memberId),
+    }).populate("emis");
 
     if (!loans.length) {
       return sendResponse(res, 404, "No loans found for this member");
@@ -94,8 +96,8 @@ export const getLoans = async (req, res) => {
     // Send a success response with the loans
     sendResponse(res, 200, "Loans retrieved successfully", loans);
   } catch (error) {
-    console.log("error in getLoans", error.message);
-    sendResponse(res, 500, "error in getLoans");
+    console.log("Error in getLoans because", error.message);
+    sendResponse(res, 500, "Error in getLoans");
   }
 };
 
@@ -133,7 +135,9 @@ export const getLoansByStatus = async (req, res) => {
       loans = await Loan.find({ member: memberId, status }).populate("emis");
     }
 
+    // setTimeout(() => {
     res.status(200).json({ data: loans });
+    // }, 5000);
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Failed to fetch loans" });

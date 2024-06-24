@@ -10,10 +10,23 @@ const Navbar = () => {
   const { updateUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const getLinkClass = (path) =>
-    location.pathname === path
-      ? "text-white bg-blue-500 border-blue-600 border-b-[4px] my-2 py-2 px-4 rounded-lg transition transform hover:scale-105 hover:shadow-lg hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
-      : "text-gray-400 border-transparent my-2 py-2 px-4 transition transform hover:scale-105 hover:shadow-md hover:text-gray-600";
+  const paths = [
+    "/",
+    "/Add_Loan",
+    "/Add_Member",
+    "/Dashboard",
+    "/payments",
+    "/settlements",
+  ];
+  const getLinkClass = (path) => {
+    if (
+      location.pathname === path ||
+      (!paths.includes(location.pathname) && path === "/home_page")
+    ) {
+      return "text-white bg-blue-500 border-blue-600 border-b-[4px] my-2 py-2 px-4 rounded-lg transition transform hover:scale-105 hover:shadow-lg hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]";
+    }
+    return "text-gray-400 border-transparent my-2 py-2 px-4 transition transform hover:scale-105 hover:shadow-md hover:text-gray-600";
+  };
 
   const handleLogout = async () => {
     try {
@@ -30,7 +43,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed w-64 h-full bg-[#1d1c1c] text-white p-6">
-      <div className="flex flex-col gap-2 ">
+      <div className="flex flex-col gap-2">
         {currentUser ? (
           <Link
             to="/"
@@ -54,7 +67,7 @@ const Navbar = () => {
           </div>
         )}
 
-        <Link to="/home_page" className={getLinkClass("/")}>
+        <Link to="/home_page" className={getLinkClass("/home_page")}>
           Home
         </Link>
         <Link to="/Add_Loan" className={getLinkClass("/Add_Loan")}>

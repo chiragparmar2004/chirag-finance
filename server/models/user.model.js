@@ -26,6 +26,12 @@ const userSchema = new mongoose.Schema(
     money: {
       cash: { type: Number, default: 0 },
       bank: { type: Number, default: 0 },
+      transactions: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "MoneyTransaction",
+        },
+      ],
     },
     members: [
       {

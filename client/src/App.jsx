@@ -12,6 +12,7 @@ import DailyCollectionSettlementPage from "./pages/DailyCollectionSettlementPage
 import PaymentsPage from "./pages/PaymentPage/PaymentPage";
 import Home from "./pages/Home/Home";
 import HomePage from "./pages/HomePage/HomePage";
+import TransactionPage from "./pages/TransactionPage/TransactionPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -38,6 +39,7 @@ function App() {
         { path: "/Dashboard", element: <Dashboard /> },
         { path: "/payments", element: <PaymentsPage /> },
         { path: "/settlements", element: <DailyCollectionSettlementPage /> },
+        { path: "/transactions", element: <TransactionPage /> },
       ],
     },
   ]);
