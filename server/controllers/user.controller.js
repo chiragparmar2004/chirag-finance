@@ -51,7 +51,7 @@ export const addMoneyTransaction = async (req, res) => {
     await user.save();
 
     // Respond with success
-    res.status(200).json({ success: true, data: newTransaction });
+    res.status(200).json({ success: true, data: user.money.transactions });
   } catch (error) {
     console.error("Error adding money transaction:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });

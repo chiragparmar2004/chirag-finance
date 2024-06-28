@@ -47,6 +47,7 @@ const Dashboard = () => {
     const fetchMembersWithPendingEMIs = async () => {
       try {
         const response = await apiRequest().get("/loan/memberList/pendingEmi");
+        console.log(response.data);
         setMembersWithPendingEMIs(response.data.data);
       } catch (error) {
         console.error(

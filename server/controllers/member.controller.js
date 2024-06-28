@@ -97,18 +97,32 @@ export const dashboardDetails = async (req, res) => {
 
 export const getPendingEmis = async (req, res) => {
   try {
+    const userId = req.userId;
+
+    // Fetch the user by ID
+    const user = await User.findById(userId).exec();
+
+    // Handle case where user is not found
+    if (!user) {
+      return sendResponse(res, 404, "User not found");
+    }
+
+    // Get all associated members for the user
+    const members = await Member.find({ user: userId }).exec();
+
+    // Handle case where no members found
+    if (!members.length) {
+      return sendResponse(res, 404, "No members found for this user");
+    }
+
     const currentDate = new Date();
     const dateSevenDaysAgo = subDays(currentDate, 7);
 
-    // Fetch loans with receivedEMIsTillDate older than 7 days ago
+    // Fetch loans with receivedEMIsTillDate older than 7 days ago for each member
     const loans = await Loan.find({
+      member: { $in: members.map((member) => member._id) },
       receivedEMIsTillDate: { $lt: dateSevenDaysAgo },
-    })
-      .populate({
-        path: "member",
-        model: "Member",
-      })
-      .exec();
+    }).exec();
 
     // Handle case where no loans found
     if (!loans.length) {

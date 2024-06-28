@@ -19,7 +19,6 @@ const DailyCollectionSettlementPage = () => {
   }, [date]);
 
   const fetchPaymentsByDate = async (selectedDate) => {
-    console.log(selectedDate);
     try {
       setLoading(true);
       const response = await apiRequest().get(
@@ -27,20 +26,30 @@ const DailyCollectionSettlementPage = () => {
       );
       setLoading(false);
       console.log(response);
-      if (response.data.success && response.data.data === null) {
-        toast("No settlement found for the selected date");
-      } else if (response.data.success && response.data.data !== null) {
+
+      if (response.data.success && response.data.data) {
         setSettlements(response.data.data);
         setTotalAmountDue(response.data.data.dueAmount);
         fetchTransactionHistory(response.data.data._id);
         toast.success("Payments fetched successfully");
+      } else if (response.data.success && !response.data.data) {
+        toast("No settlement found for the selected date");
+        setSettlements(null);
+        setTotalAmountDue(0);
+        setTransactionHistory([]);
       } else {
-        toast.error("Failed to fetch payments");
+        toast.error("Failed to fetch settlement");
       }
     } catch (error) {
       console.error("Error fetching payments by date:", error);
       setLoading(false);
-      toast.error("Error fetching payments by date");
+
+      if (error.response && error.response.status === 404) {
+        toast("No settlement found for the selected date");
+      } else {
+        toast.error("Error fetching payments by date");
+      }
+
       setSettlements(null);
       setTotalAmountDue(0);
       setTransactionHistory([]);

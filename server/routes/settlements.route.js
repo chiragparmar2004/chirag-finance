@@ -14,6 +14,10 @@ router.put("/update/:id", verifyToken, updateSettlement);
 router.get("/get", verifyToken, getSettlements);
 router.get("/settlementByDate/:date", verifyToken, getSettlementByDate);
 router.get("/dueSettlements", verifyToken, getUserDueSettlements);
-router.get("/history/:settlementId", getTransactionHistoryBySettlementId);
+router.get(
+  "/history/:settlementId",
+  verifyToken,
+  getTransactionHistoryBySettlementId
+);
 
 export default router;

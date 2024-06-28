@@ -31,6 +31,7 @@ export const addEMI = async (req, res) => {
     const { loanId } = req.params;
     const { amount, paymentType } = req.body;
     console.log(paymentType);
+
     // Find the loan
     const loan = await Loan.findById(loanId).populate("member");
     if (!loan) {
@@ -73,13 +74,13 @@ export const addEMI = async (req, res) => {
     loan.collectedMoney = (loan.collectedMoney || 0) + amount;
     loan.lastPaymentDate = new Date();
     loan.emis = loan.emis.concat(newEMIs);
-    console.log(numberOfDays, "day ");
 
     // Update receivedEMIsUntil and receivedEMIsUntilDate
     loan.receivedEMIsTillDate = addDays(
       loan.receivedEMIsTillDate,
       numberOfDays
     );
+
     // Check if the loan is fully paid
     if (loan.collectedMoney >= loan.amount) {
       loan.status = "Paid"; // Updated status to "Paid"
@@ -87,17 +88,16 @@ export const addEMI = async (req, res) => {
 
     // Save the updated loan details
     await loan.save();
-    console.log(loan.receivedEMIsTillDate, "loan receivedEMIsTillDate ");
 
     // Update the user's receivedPayments array
     const user = await User.findById(loan.member.user);
     user.receivedPayments.push(newEMIs[0]);
 
-    // If payment type is gpay, add the money to user's gpay field
     if (paymentType === "GPay") {
+      // Add the money to user's bank field
       user.money.bank += amount;
     } else {
-      // Update DailyCollectionSettlement if payment type is not gpay
+      // Update DailyCollectionSettlement if payment type is not GPay
       const startOfDay = new Date(currentDate);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(currentDate);
@@ -105,6 +105,7 @@ export const addEMI = async (req, res) => {
 
       let dailyCollection = await DailyCollectionSettlement.findOne({
         date: { $gte: startOfDay, $lt: endOfDay },
+        user: user._id, // Ensure the daily collection is for the specific user
       });
 
       if (dailyCollection) {
@@ -113,6 +114,7 @@ export const addEMI = async (req, res) => {
       } else {
         dailyCollection = new DailyCollectionSettlement({
           date: currentDate,
+          user: user._id, // Associate the settlement with the user
           totalAmountDue: amount,
           amountReceived: 0,
           paymentType,
@@ -134,6 +136,7 @@ export const addEMI = async (req, res) => {
         user.dailySettlements.push(dailyCollection._id);
       }
     }
+
     await user.save();
 
     // Send a success response

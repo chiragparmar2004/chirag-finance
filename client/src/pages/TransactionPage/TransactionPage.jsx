@@ -48,7 +48,7 @@ const TransactionPage = () => {
           },
         }
       );
-      console.log(response);
+      // console.log(response);
       setTransactions(response.data.data);
       setLoading(false);
     } catch (err) {

@@ -101,10 +101,20 @@ export const updateSettlement = async (req, res) => {
 // Fetch all settlements
 export const getSettlements = async (req, res) => {
   try {
-    const settlements = await DailyCollectionSettlement.find().sort({
-      date: -1,
-    });
-    res.json({ success: true, data: settlements });
+    const userId = req.userId; // Assuming userId is in req.token
+
+    const userSettlements = await User.findById(userId)
+      .populate("dailySettlements")
+      .sort({
+        date: -1,
+      });
+
+    console.log(userSettlements, "settlements");
+
+    // const settlements = await DailyCollectionSettlement.find().sort({
+    //   date: -1,
+    // });
+    res.json({ success: true, data: userSettlements });
   } catch (error) {
     console.error("Error fetching settlements:", error);
     res.status(500).json({ success: false, error: "Server Error" });
@@ -114,16 +124,40 @@ export const getSettlements = async (req, res) => {
 // Fetch a settlement by date
 export const getSettlementByDate = async (req, res) => {
   try {
+    const userId = req.userId;
     const { date } = req.params;
-    console.log(`Requested date: ${date}`);
+    console.log(`Requested date: ${date} for user: ${userId}`);
 
+    // Convert the date to start and end of the day
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
+
+    // Fetch the user by ID
+    const user = await User.findById(userId)
+      .populate("dailySettlements")
+      .exec();
+
+    // Handle case where user is not found
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Find the settlement for the specified date within the user's daily settlements
     const settlement = await DailyCollectionSettlement.findOne({
+      _id: { $in: user.dailySettlements },
       date: { $gte: startOfDay, $lt: endOfDay },
     });
+
+    if (!settlement) {
+      return res.status(404).json({
+        success: false,
+        message: "No settlement found for the specified date",
+      });
+    }
 
     res.status(200).json({ success: true, data: settlement });
   } catch (error) {
@@ -159,9 +193,35 @@ export const getUserDueSettlements = async (req, res) => {
 export const getTransactionHistoryBySettlementId = async (req, res) => {
   try {
     const { settlementId } = req.params;
+
+    const userId = req.userId; // Assuming userId is in req.token
+    console.log(userId);
+    const user = await User.findById(userId).populate("dailySettlements");
+
+    // Handle case where user is not found
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Check if the settlementId belongs to the user's dailySettlements
+    if (
+      !user.dailySettlements.some(
+        (settlement) => settlement._id.toString() === settlementId
+      )
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: "Settlement not found for this user",
+      });
+    }
+
+    // Fetch the transaction history for the specified settlement ID
     const transactionHistory = await TransactionHistory.find({
       settlement: settlementId,
     });
+
     res.status(200).json({ success: true, data: transactionHistory });
   } catch (error) {
     console.error("Error fetching transaction history:", error);

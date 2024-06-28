@@ -3,7 +3,7 @@ import User from "../models/user.model.js";
 export const getTransactionHistory = async (req, res) => {
   try {
     const userId = req.userId;
-
+    console.log(userId, "userId: ");
     const user = await User.findById(userId).populate("money.transactions");
     if (!user) {
       return res
