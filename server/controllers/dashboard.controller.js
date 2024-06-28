@@ -10,7 +10,8 @@ export const getDashboardSummary = async (req, res) => {
     const user = await User.findById(userId)
       .populate("members")
       .populate("dailySettlements")
-      .populate("receivedPayments");
+      .populate("receivedPayments")
+      .populate("interestHistory");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -31,11 +32,9 @@ export const getDashboardSummary = async (req, res) => {
     // Calculate total due amount from dailySettlements
     let totalDueAmount = 0;
     user.dailySettlements.forEach((settlement) => {
-      console.log(settlement._doc);
       totalDueAmount += settlement._doc.dueAmount;
     });
 
-    console.log(totalDueAmount);
     // Prepare the summary object
     const summary = {
       totalInterestEarned,
@@ -44,6 +43,7 @@ export const getDashboardSummary = async (req, res) => {
       totalDueAmount,
       cash: user.money.cash,
       bank: user.money.bank,
+      interestHistory: user.interestHistory, // Include the interest history
     };
 
     res.status(200).json(summary);
@@ -73,6 +73,7 @@ export const getRecentLoans = async (req, res) => {
           ...loan.toObject(),
           member: {
             name: member.name,
+            profilePicture: member.profilePicture,
           },
         });
       });

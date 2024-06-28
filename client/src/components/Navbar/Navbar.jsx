@@ -17,6 +17,7 @@ const Navbar = () => {
     "/Dashboard",
     "/payments",
     "/settlements",
+    "/transactions",
   ];
   const getLinkClass = (path) => {
     if (
@@ -85,7 +86,9 @@ const Navbar = () => {
         <Link to="/settlements" className={getLinkClass("/settlements")}>
           Settlements
         </Link>
-
+        <Link to="/transactions" className={getLinkClass("/transactions")}>
+          Transactions
+        </Link>
         {currentUser && (
           <button
             onClick={handleLogout}

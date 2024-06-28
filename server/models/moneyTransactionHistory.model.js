@@ -18,11 +18,16 @@ const moneyTransactionHistorySchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  paymentType: {
+    type: String,
+    enum: ["cash", "gpay"],
+    required: true,
+  },
 });
 
-const moneyTransactionHistory = mongoose.model(
+const MoneyTransactionHistory = mongoose.model(
   "MoneyTransaction",
   moneyTransactionHistorySchema
 );
 
-export default moneyTransactionHistory;
+export default MoneyTransactionHistory;

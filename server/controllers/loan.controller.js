@@ -4,8 +4,11 @@ import Loan from "../models/loan.model.js";
 import Member from "../models/member.model.js";
 import EMI from "../models/emi.model.js";
 import User from "../models/user.model.js";
+import moneyTransactionHistory from "../models/moneyTransactionHistory.model.js";
+
 import { format, addDays, parseISO } from "date-fns";
 import mongoose from "mongoose";
+import MoneyTransactionHistory from "../models/moneyTransactionHistory.model.js";
 
 export const addLoan = async (req, res) => {
   try {
@@ -14,7 +17,7 @@ export const addLoan = async (req, res) => {
 
     // Validate input
     if (!amount || !interest || !startDate || !paymentType) {
-      return sendResponse(res, 400, "Missing required fields");
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
     // Calculate the end date as 100 days after the start date
@@ -28,6 +31,7 @@ export const addLoan = async (req, res) => {
       startDate,
       endDate,
       member: memberId,
+      receivedEMIsTillDate: startDate,
     });
 
     // Save the new loan to the database
@@ -36,7 +40,7 @@ export const addLoan = async (req, res) => {
     // Find the member and add the loan to the member's loans list
     const member = await Member.findById(memberId);
     if (!member) {
-      return sendResponse(res, 404, "Member not found");
+      return res.status(404).json({ message: "Member not found" });
     }
 
     if (!member.loans) {
@@ -48,38 +52,64 @@ export const addLoan = async (req, res) => {
     // Find the user (assuming member is linked to a user)
     const user = await User.findById(member.user);
     if (!user) {
-      return sendResponse(res, 404, "User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Convert interestEarned to a number if it exists, otherwise initialize to 0
+    // Update interest earned
     user.interestEarned = Number(user.interestEarned || 0) + Number(interest);
     user.totalLoanGiven = Number(user.totalLoanGiven || 0) + Number(amount);
+
+    // Update interest history
+    user.interestHistory.push({
+      date: new Date(),
+      amount: Number(interest),
+    });
+
     // Deduct the amount from the user's money based on payment type
     const loanAmount = Number(amount) - Number(interest);
     if (paymentType === "cash") {
       if (user.money.cash < loanAmount) {
-        return sendResponse(res, 400, "Insufficient cash balance");
+        return res.status(400).json({ message: "Insufficient cash balance" });
       }
+      // Update cash transaction and balance
+      const cashTransaction = new MoneyTransactionHistory({
+        amount: loanAmount,
+        type: "debit",
+        purpose: `Given loan to ${member.name} of ${amount}`,
+        paymentType: "cash",
+      });
+      await cashTransaction.save();
       user.money.cash -= loanAmount;
+      user.money.transactions.push(cashTransaction._id);
     } else if (paymentType === "gpay") {
       if (user.money.bank < loanAmount) {
-        return sendResponse(res, 400, "Insufficient bank balance");
+        return res.status(400).json({ message: "Insufficient bank balance" });
       }
+      // Update bank transaction and balance
+      const gpayTransaction = new MoneyTransactionHistory({
+        amount: loanAmount,
+        type: "debit",
+        purpose: `Given loan to ${member.name} of ${amount}`,
+        paymentType: "gpay",
+      });
+      await gpayTransaction.save();
       user.money.bank -= loanAmount;
+      user.money.transactions.push(gpayTransaction._id);
     } else {
-      return sendResponse(res, 400, "Invalid payment type");
+      return res.status(400).json({ message: "Invalid payment type" });
     }
 
     // Save the updated user
     await user.save();
 
     // Send a success response
-    sendResponse(res, 201, "Loan added successfully", newLoan);
+    res.status(201).json({ message: "Loan added successfully", newLoan });
   } catch (error) {
     console.error("Error in addLoan:", error.message);
-    sendResponse(res, 500, "Error in addLoan");
+    res.status(500).json({ message: "Error in addLoan" });
   }
 };
+
 export const getLoans = async (req, res) => {
   try {
     const { memberId } = req.params;
@@ -199,11 +229,12 @@ export const renewLoan = async (req, res) => {
     oldLoan.lastPaymentDate = new Date();
     oldLoan.emis = oldLoan.emis.concat(newEMIs);
     console.log(numberOfDays, "day ");
-    // Update receivedEMIsUntil and receivedEMIsUntilDate
-    oldLoan.receivedEMIsUntilDate = new Date(
+    // Update receivedEMIsUntil and receivedEMIsTillDate
+    oldLoan.receivedEMIsTillDate = new Date(
       currentDate + numberOfDays * 24 * 60 * 60 * 1000
-    ); // Add numberOfDays to the current date
-    console.log(oldLoan.receivedEMIsUntilDate);
+    );
+    // Add numberOfDays to the current date
+    console.log(oldLoan.receivedEMIsTillDate);
     // Check if the oldLoan is fully paid
     if (oldLoan.collectedMoney >= oldLoan.amount) {
       oldLoan.status = "Paid"; // Updated status to "Paid"
@@ -242,6 +273,7 @@ export const renewLoan = async (req, res) => {
       startDate,
       endDate,
       member: memberId,
+      receivedEMIsTillDate: startDate,
     });
 
     console.log("New loan created:", newLoan);

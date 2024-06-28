@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiRequest from "../../lib/apiRequest";
 import { format, parseISO } from "date-fns";
-import { ThreeDots } from "react-loader-spinner"; // Importing the ThreeDots loader
+import { ColorRing, ThreeDots } from "react-loader-spinner"; // Importing the ThreeDots loader
 
 const MemberLoanPage = () => {
   const { id } = useParams();
@@ -50,7 +50,7 @@ const MemberLoanPage = () => {
   }, [id, filter]);
 
   const calculatePercentage = (collected, total) => {
-    return Math.min((collected / total) * 100, 100);
+    return Math.min((collected / total) * 100, 100).toFixed(2);
   };
 
   return (
@@ -125,6 +125,9 @@ const MemberLoanPage = () => {
                   loan.collectedMoney,
                   loan.amount
                 );
+                {
+                  /* console.log(paymentProgress); */
+                }
 
                 return (
                   <li
@@ -152,7 +155,7 @@ const MemberLoanPage = () => {
                       </div>
                       <div
                         className={`flex items-center justify-center w-40 h-40 border-2 ${
-                          paymentProgress === 100
+                          paymentProgress == 100.0
                             ? "bg-green-500 text-white"
                             : "border-black text-black"
                         } font-bold text-xl rounded-full relative`}
@@ -186,7 +189,9 @@ const MemberLoanPage = () => {
                 );
               })
             ) : (
-              <p className="text-black">No loans found for this member.</p>
+              <div className="flex items-center justify-center">
+                <img src="/No-data-rafiki.png" height={500} width={500} />
+              </div>
             )}
           </ul>
         </div>

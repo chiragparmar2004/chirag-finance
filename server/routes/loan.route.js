@@ -21,6 +21,6 @@ router.get("/loans/:memberId/:status", verifyToken, getLoansByStatus);
 // Route to get a specific loan with all EMIs
 router.get("/details/:loanId", verifyToken, getLoanWithEMIs);
 
-router.get("/pendingEmi", verifyToken, getPendingEmis);
+router.get("/memberList/pendingEmi", verifyToken, getPendingEmis);
 
 export default router;

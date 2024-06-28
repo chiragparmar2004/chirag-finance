@@ -32,7 +32,7 @@ const LoanSchema = new mongoose.Schema({
   nextPaymentDate: {
     type: Date,
   },
-  receivedEMIsUntilDate: { type: Date }, // Date until which EMIs have been received
+  receivedEMIsTillDate: { type: Date }, // Date until which EMIs have been received
 
   member: {
     type: mongoose.Schema.Types.ObjectId,

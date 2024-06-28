@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const interestHistorySchema = new mongoose.Schema({
+  date: {
+    type: Date,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -57,6 +68,7 @@ const userSchema = new mongoose.Schema(
         ref: "DailyCollectionSettlement",
       },
     ],
+    interestHistory: [interestHistorySchema], // New field for interest history
   },
   { timestamps: true }
 );

@@ -5,7 +5,14 @@ import AddEmiModal from "../../components/AddEmiModal/AddEmiModal";
 import RenewLoanModal from "../../components/RenewLoanModal/RenewLoanModal"; // Import RenewLoanModal component
 import apiRequest from "../../lib/apiRequest";
 import toast from "react-hot-toast";
-// import { BsCashCoin } from "react-icons/bs";
+import {
+  BsCash,
+  BsPerson,
+  BsCalendar,
+  BsBarChart,
+  BsCheckCircle,
+} from "react-icons/bs"; // Import some icons for visual enhancement
+
 import DoughnutChart from "../../components/Charts/DoughnutChart";
 
 const generateDateRange = (startDate, endDate) => {
@@ -95,16 +102,24 @@ const LoanDetailPage = () => {
     setIsRenewLoanModalOpen(true);
   };
 
-  // const renderPaymentMethodIcon = (method) => {
-  //   switch (method) {
-  //     case "Cash":
-  //       return <BsCashCoin />;
-  //     case "GPay":
-  //       return <BsCashCoin />;
-  //     default:
-  //       return null;
-  //   }
-  // };
+  const renderPaymentMethodIcon = (method) => {
+    switch (method) {
+      case "cash":
+        return (
+          <div className="flex items-center justify-center">
+            <img src="/cash.png" width={30} height={40} />
+          </div>
+        );
+      case "GPay":
+        return (
+          <div className="flex items-center justify-center">
+            <img src="/gpay.png" width={30} height={40} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
   const handleModalSubmit = async (amount, paymentMethod) => {
     const toastId = toast.loading("Adding EMI...");
 
@@ -134,39 +149,53 @@ const LoanDetailPage = () => {
   return (
     <div className="">
       <div className="  mx-auto ">
-        <div className="bg-[#454545] shadow-custom-inset p-4  flex flex-row justify-between  rounded-lg mb-8 text-black">
-          <div className="flex flex-col">
-            {" "}
+        <div className="bg-[#454545] shadow-custom-inset p-6 flex flex-row justify-between rounded-lg mb-8 text-black">
+          <div className="flex flex-col space-y-3">
             <h2 className="text-2xl font-bold mb-4">Loan ID: {loan._id}</h2>
-            <p className="mb-2">
-              <strong>Member ID:</strong> {loan.member}
+            <p className="flex items-center">
+              <BsPerson className="mr-2 text-black" />
+              <strong>Member ID:</strong>{" "}
+              <span className="ml-2">{loan.member}</span>
             </p>
-            <p className="mb-2">
-              <strong>Amount:</strong> {loan.amount}
+            <p className="flex items-center">
+              <BsCash className="mr-2 text-black" />
+              <strong>Amount:</strong>{" "}
+              <span className="ml-2">{loan.amount}</span>
             </p>
-            <p className="mb-2">
-              <strong>Status:</strong> {loan.status}
+            <p className="flex items-center">
+              <BsCheckCircle className="mr-2 text-black" />
+              <strong>Status:</strong>{" "}
+              <span className="ml-2">{loan.status}</span>
             </p>
-            <p className="mb-2">
+            <p className="flex items-center">
+              <BsCalendar className="mr-2 text-black" />
               <strong>Start Date:</strong>{" "}
-              {format(parseISO(loan.startDate), "dd-MM-yyyy")}
+              <span className="ml-2">
+                {format(parseISO(loan.startDate), "dd-MM-yyyy")}
+              </span>
             </p>
-            <p className="mb-2">
+            <p className="flex items-center">
+              <BsCalendar className="mr-2 text-black" />
               <strong>End Date:</strong>{" "}
-              {format(parseISO(loan.endDate), "dd-MM-yyyy")}
+              <span className="ml-2">
+                {format(parseISO(loan.endDate), "dd-MM-yyyy")}
+              </span>
             </p>
-            <p className="mb-2">
-              <strong>Collected Amount:</strong> {loan.collectedMoney}
+            <p className="flex items-center">
+              <BsBarChart className="mr-2 text-black" />
+              <strong>Collected Amount:</strong>{" "}
+              <span className="ml-2">{loan.collectedMoney}</span>
             </p>
           </div>
 
-          <div className=" flex items-center justify-center h-[270px] w-[270px]   ">
+          <div className="flex items-center justify-center h-[270px] w-[270px] rounded-lg shadow-inner p-4">
             <DoughnutChart
               collectedAmount={loan.collectedMoney}
               totalAmount={loan.amount}
             />
           </div>
         </div>
+
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={handleAddEmi}
@@ -232,7 +261,7 @@ const LoanDetailPage = () => {
                   <tr
                     key={index}
                     className={
-                      "bg-[#454545] shadow-custom-inset  text-black text-2xl text-center"
+                      " w-full bg-gray-100 text-gray-900 border-b text-center border-gray-200 hover:bg-gray-200"
                     }
                   >
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-black border-b border-r border-black">
@@ -247,7 +276,8 @@ const LoanDetailPage = () => {
                         : ""}
                     </td>
                     <td className="px-4 py-3 border-b border-r border-black">
-                      {emiEntry.paymentType || ""}
+                      {/* {emiEntry.paymentType || ""} */}
+                      {renderPaymentMethodIcon(emiEntry.paymentType)}
                     </td>
                     <td className="px-4 py-3 border-b border-r border-black">
                       {emiEntry.date

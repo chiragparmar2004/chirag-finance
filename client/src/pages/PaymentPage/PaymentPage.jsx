@@ -23,7 +23,7 @@ const PaymentsPage = () => {
       setLoading(true);
       const response = await apiRequest().get("/payments/receivedPayments");
       setPayments(response.data.data);
-      console.log("response data", response.data.data);
+      // console.log("response data", response.data.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching payments:", error);
@@ -45,6 +45,8 @@ const PaymentsPage = () => {
           },
         }
       );
+
+      console.log(response);
 
       if (response.data.success && response.data.data.length === 0) {
         setPayments([]);

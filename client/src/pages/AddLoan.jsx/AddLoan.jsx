@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import apiRequest from "../../lib/apiRequest";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const AddLoan = ({ onSubmit }) => {
+const AddLoan = () => {
   const [members, setMembers] = useState([]);
   const [memberSuggestions, setMemberSuggestions] = useState([]);
   const [formData, setFormData] = useState({
@@ -13,11 +13,14 @@ const AddLoan = ({ onSubmit }) => {
     interest: "",
     startDate: "",
     endDate: "",
-    paymentType: "", // Added paymentType field
+    paymentType: "",
   });
   const [debouncedInput, setDebouncedInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -41,6 +44,7 @@ const AddLoan = ({ onSubmit }) => {
       member.name.toLowerCase().includes(debouncedInput.toLowerCase())
     );
     setMemberSuggestions(filteredSuggestions);
+    setHighlightedIndex(-1); // Reset the highlighted index when suggestions change
   }, [debouncedInput, members]);
 
   const handleChange = (e) => {
@@ -71,6 +75,7 @@ const AddLoan = ({ onSubmit }) => {
       memberName: selectedMember.name,
     });
     setMemberSuggestions([]);
+    setHighlightedIndex(-1); // Reset the highlighted index
   };
 
   const handleAmountOptionClick = (amount) => {
@@ -80,17 +85,62 @@ const AddLoan = ({ onSubmit }) => {
     }));
   };
 
-  const defaultAmountOptions = [10000, 15000, 20000]; // Define default amount options here
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (memberSuggestions.length === 0) return;
+
+      if (e.key === "ArrowDown") {
+        setHighlightedIndex((prevIndex) =>
+          prevIndex < memberSuggestions.length - 1 ? prevIndex + 1 : 0
+        );
+      } else if (e.key === "ArrowUp") {
+        setHighlightedIndex((prevIndex) =>
+          prevIndex > 0 ? prevIndex - 1 : memberSuggestions.length - 1
+        );
+      } else if (e.key === "Enter") {
+        e.preventDefault(); // Prevent form submission on Enter
+        if (
+          highlightedIndex >= 0 &&
+          highlightedIndex < memberSuggestions.length
+        ) {
+          handleMemberSelection(memberSuggestions[highlightedIndex]);
+        }
+      }
+    },
+    [highlightedIndex, memberSuggestions]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
+  const defaultAmountOptions = [10000, 15000, 20000];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      !formData.memberId ||
+      !formData.amount ||
+      !formData.interest ||
+      !formData.startDate ||
+      !formData.paymentType
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
+    setLoading(true);
+    const loadingToast = toast.loading("Adding Loan...");
     try {
       const { memberId, amount, interest, startDate, paymentType } = formData;
       const response = await apiRequest().post(`/loan/addLoan/${memberId}`, {
         amount,
         interest,
         startDate,
-        paymentType, // Include paymentType in the request
+        paymentType,
       });
 
       if (response.status === 201) {
@@ -102,7 +152,7 @@ const AddLoan = ({ onSubmit }) => {
           interest: "",
           startDate: "",
           endDate: "",
-          paymentType: "", // Reset paymentType
+          paymentType: "",
         });
         navigate("/home_page");
       } else {
@@ -116,6 +166,9 @@ const AddLoan = ({ onSubmit }) => {
         error.response?.data?.message ||
         "Failed to add loan. Please try again.";
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+      toast.dismiss(loadingToast);
     }
   };
 
@@ -142,10 +195,12 @@ const AddLoan = ({ onSubmit }) => {
             </div>
             {memberSuggestions.length > 0 && (
               <ul className="absolute w-full bg-white border border-gray-300 rounded mt-1 z-10">
-                {memberSuggestions.map((member) => (
+                {memberSuggestions.map((member, index) => (
                   <li
                     key={member._id}
-                    className="cursor-pointer py-2 px-3 hover:font-bold"
+                    className={`cursor-pointer py-2 px-3 hover:font-bold ${
+                      highlightedIndex === index ? "bg-gray-300" : ""
+                    }`}
                     onClick={() => handleMemberSelection(member)}
                   >
                     {member.name}
@@ -197,7 +252,7 @@ const AddLoan = ({ onSubmit }) => {
                 value={formData.interest}
                 onChange={handleChange}
                 className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-                placeholder="Enter interest amount"
+                placeholder="Enter interest rate"
               />
               <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
                 Interest
@@ -237,7 +292,6 @@ const AddLoan = ({ onSubmit }) => {
           </div>
 
           <div className="mb-4 relative">
-            {/* <label className="block text-blue-700 mb-2">Payment Type</label> */}
             <div className="flex space-x-2 border-[1px] border-black rounded-md select-none justify-around ">
               <label className="radio flex items-center justify-center rounded-lg p-1 cursor-pointer">
                 <input
@@ -271,8 +325,9 @@ const AddLoan = ({ onSubmit }) => {
             <button
               type="submit"
               className="w-full cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+              disabled={loading}
             >
-              Add Loan
+              {loading ? "Adding..." : "Add Loan"}
             </button>
           </div>
         </form>

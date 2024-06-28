@@ -3,6 +3,7 @@ import sendResponse from "../lib/responseHelper.js";
 import Member from "../models/member.model.js";
 import User from "../models/user.model.js";
 import Loan from "../models/loan.model.js";
+import { subDays } from "date-fns";
 
 export const addMember = async (req, res) => {
   try {
@@ -96,12 +97,24 @@ export const dashboardDetails = async (req, res) => {
 
 export const getPendingEmis = async (req, res) => {
   try {
-    // Fetch all loans with pending EMIs
-    const loans = await Loan.find({ status: "Pending" });
+    const currentDate = new Date();
+    const dateSevenDaysAgo = subDays(currentDate, 7);
+
+    // Fetch loans with receivedEMIsTillDate older than 7 days ago
+    const loans = await Loan.find({
+      receivedEMIsTillDate: { $lt: dateSevenDaysAgo },
+    })
+      .populate({
+        path: "member",
+        model: "Member",
+      })
+      .exec();
+
     // Handle case where no loans found
     if (!loans.length) {
       return sendResponse(res, 404, "No pending EMIs found");
     }
+
     // Send success response with loans
     sendResponse(res, 200, "Pending EMIs retrieved successfully", loans);
   } catch (error) {

@@ -74,11 +74,12 @@ export const addEMI = async (req, res) => {
     loan.lastPaymentDate = new Date();
     loan.emis = loan.emis.concat(newEMIs);
     console.log(numberOfDays, "day ");
+
     // Update receivedEMIsUntil and receivedEMIsUntilDate
-    loan.receivedEMIsUntilDate = new Date(
-      currentDate + numberOfDays * 24 * 60 * 60 * 1000
-    ); // Add numberOfDays to the current date
-    console.log(loan.receivedEMIsUntilDate);
+    loan.receivedEMIsTillDate = addDays(
+      loan.receivedEMIsTillDate,
+      numberOfDays
+    );
     // Check if the loan is fully paid
     if (loan.collectedMoney >= loan.amount) {
       loan.status = "Paid"; // Updated status to "Paid"
@@ -86,6 +87,7 @@ export const addEMI = async (req, res) => {
 
     // Save the updated loan details
     await loan.save();
+    console.log(loan.receivedEMIsTillDate, "loan receivedEMIsTillDate ");
 
     // Update the user's receivedPayments array
     const user = await User.findById(loan.member.user);

@@ -3,6 +3,7 @@ import DailyCollectionSettlement from "../models/dailyCollectionSettlement.model
 import moneyTransactionHistory from "../models/moneyTransactionHistory.model.js";
 import TransactionHistory from "../models/transactionHistory.model.js";
 import User from "../models/user.model.js";
+import { format, parseISO } from "date-fns";
 
 export const updateSettlement = async (req, res) => {
   try {
@@ -40,24 +41,43 @@ export const updateSettlement = async (req, res) => {
       }
     }
 
-    // Create and save transaction histories
+    // Create and save transaction histories with the updated purpose
+    const settlementDate =
+      settlement.date instanceof Date
+        ? format(settlement.date, "dd-MM-yyyy")
+        : format(parseISO(settlement.date), "dd-MM-yyyy");
 
     const cashTransaction = new moneyTransactionHistory({
       amount: cashAmount,
       type: "credit",
-      purpose: "Cash payment for settlement",
+      purpose: `Settlement Payment for ${settlementDate}`,
+      paymentType: "cash",
     });
     if (cashAmount > 0) {
       await cashTransaction.save();
     }
+
     const gpayTransaction = new moneyTransactionHistory({
       amount: gpayAmount,
       type: "credit",
-      purpose: "GPay payment for settlement",
+      purpose: `Settlement Payment for ${settlementDate}`,
+      paymentType: "gpay",
     });
     if (gpayAmount > 0) {
       await gpayTransaction.save();
     }
+
+    // Save transaction history
+    const transaction = new TransactionHistory({
+      date: new Date(),
+      amount: cashAmount + gpayAmount,
+      paymentType: { cash: cashAmount, gpay: gpayAmount },
+      settlement: id,
+    });
+    console.log("Transaction:", transaction);
+    await transaction.save();
+    // Update the settlement
+    await settlement.save();
     // Update user's money accounts and add transactions to user's history
     const user = await User.findById(userId);
     if (user) {
@@ -104,10 +124,6 @@ export const getSettlementByDate = async (req, res) => {
     const settlement = await DailyCollectionSettlement.findOne({
       date: { $gte: startOfDay, $lt: endOfDay },
     });
-
-    if (!settlement) {
-      sendResponse(res, 404, "settlement not found");
-    }
 
     res.status(200).json({ success: true, data: settlement });
   } catch (error) {

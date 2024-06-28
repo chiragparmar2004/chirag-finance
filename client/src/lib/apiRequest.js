@@ -21,7 +21,7 @@ const apiRequest = () => {
     retries: 3,
     retryDelay: (retryCount) => {
       console.log(`Retry attempt: ${retryCount}`);
-      return retryCount * 1000; // Exponential backoff: 1s, 2s, 3s
+      return retryCount * 3000; // Exponential backoff: 1s, 2s, 3s
     },
     retryCondition: (error) => {
       // Retry on network errors or 5xx status codes
