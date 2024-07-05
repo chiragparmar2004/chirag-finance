@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiRequest from "../../lib/apiRequest";
 import { format, parseISO } from "date-fns";
-import { ColorRing, ThreeDots } from "react-loader-spinner"; // Importing the ThreeDots loader
+import { ThreeDots } from "react-loader-spinner"; // Importing the ThreeDots loader
 
 const MemberLoanPage = () => {
   const { id } = useParams();

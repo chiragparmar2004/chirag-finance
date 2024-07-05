@@ -11,6 +11,7 @@ import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import apiRequest from "../../lib/apiRequest";
 import toast from "react-hot-toast";
 import { ThreeDots } from "react-loader-spinner";
+import AddMoneyTransactionModal from "../../components/AddMoneyTransactionModal/AddMoneyTransactionModal";
 
 const Dashboard = () => {
   const [summary, setSummary] = useState(null);
@@ -19,6 +20,7 @@ const Dashboard = () => {
   const [membersWithPendingEMIs, setMembersWithPendingEMIs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +30,6 @@ const Dashboard = () => {
         const settlementsResponse = await apiRequest().get(
           "/dashboard/recentSettlements"
         );
-        // console.log(loansResponse);
         setSummary(summaryResponse.data);
         setRecentLoans(loansResponse.data);
         setRecentSettlements(settlementsResponse.data);
@@ -41,25 +42,49 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isModalOpen]);
 
   useEffect(() => {
     const fetchMembersWithPendingEMIs = async () => {
       try {
         const response = await apiRequest().get("/loan/memberList/pendingEmi");
-        console.log(response.data);
+        console.log(response);
         setMembersWithPendingEMIs(response.data.data);
       } catch (error) {
-        console.error(
-          "Error fetching members with pending EMIs:",
-          error.message
-        );
-        toast.error("Error fetching members with pending EMIs.");
+        if (error.response && error.response.status === 404) {
+          toast("No members with pending EMIs found.");
+        } else {
+          console.error(
+            "Error fetching members with pending EMIs:",
+            error.message
+          );
+          toast.error("Error fetching members with pending EMIs.");
+        }
       }
     };
 
     fetchMembersWithPendingEMIs();
   }, []);
+
+  const handleAddTransaction = async (form) => {
+    try {
+      const response = await apiRequest().post(
+        "/user/addMoneyTransaction",
+        form
+      );
+      setSummary((prevSummary) => ({
+        ...prevSummary,
+        // Update your summary data here accordingly
+      }));
+      toast.success("Transaction added successfully.");
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error("Error adding transaction.");
+    }
+  };
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   if (loading)
     return (
@@ -79,8 +104,6 @@ const Dashboard = () => {
   if (error) return <div className="text-center mt-8">Error: {error}</div>;
 
   const interestHistoryData = summary?.interestHistory || [];
-
-  console.log(interestHistoryData, "interest  history data");
 
   const chartConfig = {
     type: "line",
@@ -164,11 +187,19 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2">
       {/* Dashboard Data */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold mb-4">Summary</h2>
+          <div className="flex justify-between mt-4">
+            <h2 className="text-2xl font-semibold mb-4">Summary</h2>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+              onClick={openModal}
+            >
+              Add Money
+            </button>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <DashboardCard
               title="Total Loan Given"
@@ -346,15 +377,9 @@ const Dashboard = () => {
                   >
                     <td className="py-3 px-4 w-1/3 flex items-center justify-center">
                       <div className="flex items-center">
-                        {/* <img
-                          src={loan.member.profilePicture}
-                          alt={loan.member.name}
-                          className="w-10 h-10 rounded-full mr-2"
-                        /> */}
                         <span className="ml-2">{loan.member.name}</span>
                       </div>
                     </td>
-
                     <td className="py-3 px-4 w-1/3">{loan.amount}</td>
                     <td className="py-3 px-4 w-1/3">
                       {format(
@@ -373,6 +398,11 @@ const Dashboard = () => {
           </p>
         )}
       </div>
+      <AddMoneyTransactionModal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        onSubmit={handleAddTransaction}
+      />
     </div>
   );
 };

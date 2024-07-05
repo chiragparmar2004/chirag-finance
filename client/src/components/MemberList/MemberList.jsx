@@ -15,6 +15,8 @@ const MemberList = ({ members }) => {
           src="/No-data-rafiki.png"
           alt="No data found"
           className="mx-auto mb-4"
+          height={450}
+          width={450}
         />
         <p className="text-gray-500">No members found.</p>
       </div>

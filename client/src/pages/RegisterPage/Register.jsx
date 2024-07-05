@@ -11,6 +11,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,6 +23,9 @@ const Register = () => {
       return;
     }
 
+    setIsLoading(true);
+    toast.loading("Registering...");
+
     try {
       const response = await apiRequest().post("auth/register", {
         username,
@@ -29,11 +33,15 @@ const Register = () => {
       });
 
       if (response.status === 201) {
-        toast.success("Registration successfully");
+        toast.dismiss();
+        toast.success("Registration successful");
         navigate("/login");
       }
     } catch (err) {
+      toast.dismiss();
       setError(err.response?.data?.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -46,9 +54,9 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-full flex items-center justify-center text-black ">
-      <div className="  p-8 rounded-lg  shadow-custom-inset w-full max-w-md   ">
-        <h2 className="text-2xl font-bold mb-6 text-center ">Register</h2>
+    <div className="min-h-full flex items-center justify-center text-black">
+      <div className="p-8 rounded-lg shadow-custom-inset w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
         {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -97,12 +105,10 @@ const Register = () => {
           </div>
           <button
             type="submit"
-            className="w-full  cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
-border-blue-600
-border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+            className="w-full cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+            disabled={isLoading}
           >
-            Register
+            {isLoading ? "Registering..." : "Register"}
           </button>
         </form>
         <div className="mt-4 text-center text-black">

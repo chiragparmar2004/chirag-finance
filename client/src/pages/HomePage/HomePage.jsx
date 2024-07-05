@@ -5,6 +5,7 @@ import apiRequest from "../../lib/apiRequest";
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true); // New state for loading
 
   useEffect(() => {
     // Function to fetch members from the API
@@ -15,6 +16,8 @@ const HomePage = () => {
         setMembers(response.data.data);
       } catch (error) {
         console.error("Error fetching members:", error);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched
       }
     };
 
@@ -56,16 +59,15 @@ const HomePage = () => {
             id="default-search"
           />
         </div>
-        {/* <input
-          type="text"
-          className="w-full p-2 border border-gray-300 rounded"
-          placeholder="Search members by name or mobile number..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        /> */}
       </div>
 
-      <MemberList members={filteredMembers} />
+      {loading ? ( // Show loading spinner while fetching data
+        <div className="flex justify-center items-center">
+          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-500"></div>
+        </div>
+      ) : (
+        <MemberList members={filteredMembers} />
+      )}
     </div>
   );
 };

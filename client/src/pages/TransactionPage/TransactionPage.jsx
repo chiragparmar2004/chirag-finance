@@ -214,12 +214,12 @@ const TransactionPage = () => {
             </button>
           </div>
         </div>
-        <button
+        {/* <button
           onClick={openModal}
           className="bg-green-500 text-white p-2 rounded"
         >
           Add Transaction
-        </button>
+        </button> */}
       </form>
 
       <table className="w-full text-lg text-left bg-[#1e1e1e] mt-4">
@@ -289,11 +289,11 @@ const TransactionPage = () => {
           ))}
         </tbody>
       </table>
-      <AddMoneyTransactionModal
+      {/* <AddMoneyTransactionModal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         onSubmit={handleAddTransaction}
-      />
+      /> */}
     </div>
   );
 };
