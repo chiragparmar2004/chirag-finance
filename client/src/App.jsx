@@ -24,20 +24,31 @@ function App() {
 
   useEffect(() => {
     const getStatus = async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/checkingServer`,
-        { withCredentials: true }
-      );
-      console.log("here");
-      if (response.status === 200) {
-        setLoading(false);
-      } else {
+      try {
+        const startTime = Date.now();
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/checkingServer`,
+          { withCredentials: true }
+        );
+
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(2000 - elapsedTime, 0); // Ensures at least 2 seconds
+
+        setTimeout(() => {
+          if (response.status === 200) {
+            setLoading(false);
+          } else {
+            setError(true);
+          }
+        }, delay);
+      } catch (error) {
         setError(true);
+        setLoading(false);
       }
     };
+
     getStatus();
   }, []);
-
   if (loading) {
     return <Loader />; // Show loader while waiting for the server response
   }
