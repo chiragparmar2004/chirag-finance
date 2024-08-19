@@ -32,6 +32,18 @@ app.use("/api/settlement", settlementRoute);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api", transactionRoutes); // Add this line to include the transaction routes
 
+app.get("/api/v1/checkingServer", (req, res) => {
+  try {
+    res.status(200).json({
+      message: "Successfully Connected to Backend Server",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to Connect to Backend Server",
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`server listening on port ${PORT}`);
 });

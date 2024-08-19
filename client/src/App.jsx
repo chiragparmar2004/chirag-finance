@@ -13,8 +13,39 @@ import PaymentsPage from "./pages/PaymentPage/PaymentPage";
 import Home from "./pages/Home/Home";
 import HomePage from "./pages/HomePage/HomePage";
 import TransactionPage from "./pages/TransactionPage/TransactionPage";
+import { useState } from "react";
+import axios from "axios";
+import { useEffect } from "react";
+import Loader from "./components/loader";
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const getStatus = async () => {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/checkingServer`,
+        { withCredentials: true }
+      );
+      console.log("here");
+      if (response.status === 200) {
+        setLoading(false);
+      } else {
+        setError(true);
+      }
+    };
+    getStatus();
+  }, []);
+
+  if (loading) {
+    return <Loader />; // Show loader while waiting for the server response
+  }
+
+  if (error) {
+    return <div>Server is down. Please try again later.</div>; // Show error message if server responds with 500 or other error
+  }
+
   const router = createBrowserRouter([
     {
       path: "/",
