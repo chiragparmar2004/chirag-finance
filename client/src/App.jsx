@@ -25,22 +25,14 @@ function App() {
   useEffect(() => {
     const getStatus = async () => {
       try {
-        const startTime = Date.now();
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/checkingServer`,
+          `${import.meta.env.VITE_REACT_APP_SERVER_URL}/api/v1/checking-server`,
           { withCredentials: true }
         );
 
-        const elapsedTime = Date.now() - startTime;
-        const delay = Math.max(2000 - elapsedTime, 0); // Ensures at least 2 seconds
-
-        setTimeout(() => {
-          if (response.status === 200) {
-            setLoading(false);
-          } else {
-            setError(true);
-          }
-        }, delay);
+        if (response.status === 200) {
+          setLoading(false);
+        }
       } catch (error) {
         setError(true);
         setLoading(false);

@@ -32,7 +32,7 @@ app.use("/api/settlement", settlementRoute);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api", transactionRoutes); // Add this line to include the transaction routes
 
-app.get("/api/v1/checkingServer", (req, res) => {
+app.get("/api/v1/checking-server", (req, res) => {
   try {
     res.status(200).json({
       message: "Successfully Connected to Backend Server",
