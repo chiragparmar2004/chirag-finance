@@ -101,7 +101,6 @@ export const getPendingEmis = async (req, res) => {
 
     // Fetch the user by ID
     const user = await User.findById(userId).exec();
-
     // Handle case where user is not found
     if (!user) {
       return sendResponse(res, 404, "User not found");
@@ -109,7 +108,6 @@ export const getPendingEmis = async (req, res) => {
 
     // Get all associated members for the user
     const members = await Member.find({ user: userId }).exec();
-
     // Handle case where no members found
     if (!members.length) {
       return sendResponse(res, 404, "No members found for this user");
@@ -122,8 +120,10 @@ export const getPendingEmis = async (req, res) => {
     const loans = await Loan.find({
       member: { $in: members.map((member) => member._id) },
       receivedEMIsTillDate: { $lt: dateSevenDaysAgo },
-    }).exec();
-
+    })
+    .populate('member') // This will populate the 'member' field
+    .exec();
+    
     // Handle case where no loans found
     if (!loans.length) {
       return sendResponse(res, 404, "No pending EMIs found");
