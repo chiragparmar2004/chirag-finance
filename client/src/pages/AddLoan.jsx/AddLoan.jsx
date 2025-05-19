@@ -1,11 +1,25 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import apiRequest from "../../lib/apiRequest";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { 
+  Box, 
+  TextField, 
+  Button, 
+  Typography, 
+  Paper, 
+   ToggleButtonGroup, 
+  ToggleButton, 
+  FormControl, 
+   Autocomplete, 
+  CircularProgress, 
+  Snackbar, 
+  Alert 
+} from "@mui/material";
 
 const AddLoan = () => {
   const [members, setMembers] = useState([]);
-  const [memberSuggestions, setMemberSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
   const [formData, setFormData] = useState({
     memberId: "",
     memberName: "",
@@ -15,9 +29,6 @@ const AddLoan = () => {
     endDate: "",
     paymentType: "",
   });
-  const [debouncedInput, setDebouncedInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const navigate = useNavigate();
 
@@ -28,6 +39,7 @@ const AddLoan = () => {
         setMembers(response.data.data);
       } catch (error) {
         console.error("Error fetching members:", error);
+        showSnackbar("Failed to fetch members", "error");
       }
     };
 
@@ -35,48 +47,15 @@ const AddLoan = () => {
   }, []);
 
   useEffect(() => {
-    if (debouncedInput.trim() === "") {
-      setMemberSuggestions([]);
-      return;
-    }
-
-    const filteredSuggestions = members.filter((member) =>
-      member.name.toLowerCase().includes(debouncedInput.toLowerCase())
-    );
-    setMemberSuggestions(filteredSuggestions);
-    setHighlightedIndex(-1); // Reset the highlighted index when suggestions change
-  }, [debouncedInput, members]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "startDate") {
-      const endDate = new Date(value);
+    if (formData.startDate) {
+      const endDate = new Date(formData.startDate);
       endDate.setDate(endDate.getDate() + 100);
       setFormData((prevFormData) => ({
         ...prevFormData,
-        [name]: value,
         endDate: endDate.toISOString().slice(0, 10),
       }));
-    } else {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
-      }));
-      if (name === "memberName") {
-        setDebouncedInput(value);
-      }
     }
-  };
-
-  const handleMemberSelection = (selectedMember) => {
-    setFormData({
-      ...formData,
-      memberId: selectedMember._id,
-      memberName: selectedMember.name,
-    });
-    setMemberSuggestions([]);
-    setHighlightedIndex(-1); // Reset the highlighted index
-  };
+  }, [formData.startDate]);
 
   const handleAmountOptionClick = (amount) => {
     setFormData((prevFormData) => ({
@@ -85,38 +64,46 @@ const AddLoan = () => {
     }));
   };
 
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (memberSuggestions.length === 0) return;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
 
-      if (e.key === "ArrowDown") {
-        setHighlightedIndex((prevIndex) =>
-          prevIndex < memberSuggestions.length - 1 ? prevIndex + 1 : 0
-        );
-      } else if (e.key === "ArrowUp") {
-        setHighlightedIndex((prevIndex) =>
-          prevIndex > 0 ? prevIndex - 1 : memberSuggestions.length - 1
-        );
-      } else if (e.key === "Enter") {
-        e.preventDefault(); // Prevent form submission on Enter
-        if (
-          highlightedIndex >= 0 &&
-          highlightedIndex < memberSuggestions.length
-        ) {
-          handleMemberSelection(memberSuggestions[highlightedIndex]);
-        }
-      }
-    },
-    [highlightedIndex, memberSuggestions]
-  );
+  const handleMemberChange = (event, newValue) => {
+    if (newValue) {
+      setFormData({
+        ...formData,
+        memberId: newValue._id,
+        memberName: newValue.name,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        memberId: "",
+        memberName: "",
+      });
+    }
+  };
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
+  const handlePaymentTypeChange = (event, newPaymentType) => {
+    if (newPaymentType !== null) {
+      setFormData({
+        ...formData,
+        paymentType: newPaymentType,
+      });
+    }
+  };
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [handleKeyDown]);
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   const defaultAmountOptions = [10000, 15000, 20000];
 
@@ -129,11 +116,11 @@ const AddLoan = () => {
       !formData.startDate ||
       !formData.paymentType
     ) {
-      toast.error("All fields are required");
+      showSnackbar("All fields are required", "error");
       return;
     }
+    
     setLoading(true);
-    const loadingToast = toast.loading("Adding Loan...");
     try {
       const { memberId, amount, interest, startDate, paymentType } = formData;
       const response = await apiRequest().post(`/loan/addLoan/${memberId}`, {
@@ -144,7 +131,7 @@ const AddLoan = () => {
       });
 
       if (response.status === 201) {
-        toast.success("Loan Added Successfully");
+        showSnackbar("Loan Added Successfully", "success");
         setFormData({
           memberId: "",
           memberName: "",
@@ -158,181 +145,199 @@ const AddLoan = () => {
       } else {
         const errorMessage =
           response.data?.message || "Failed to add loan. Please try again.";
-        toast.error(errorMessage);
+        showSnackbar(errorMessage, "error");
       }
     } catch (error) {
       console.error("Error adding loan:", error);
       const errorMessage =
         error.response?.data?.message ||
         "Failed to add loan. Please try again.";
-      toast.error(errorMessage);
+      showSnackbar(errorMessage, "error");
     } finally {
       setLoading(false);
-      toast.dismiss(loadingToast);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="max-w-md w-full bg-[#454545] shadow-custom-inset rounded-lg p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center text-black">
+    <Box sx={{ 
+      display: "flex", 
+      alignItems: "center", 
+      justifyContent: "center", 
+      minHeight: "100vh",
+     }}>
+      <Paper 
+        elevation={8}
+        sx={{ 
+          maxWidth: "500px", 
+          width: "100%", 
+          p: 4, 
+          borderRadius: 2,
+        }}
+      >
+        <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
           Add Loan
-        </h1>
-        <form onSubmit={handleSubmit} className="text-black">
-          <div className="mb-4 relative">
-            <div className="flex flex-col-reverse w-full">
-              <input
-                type="text"
-                name="memberName"
-                value={formData.memberName}
-                onChange={handleChange}
-                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-                placeholder="Enter member name"
+        </Typography>
+        
+        <form onSubmit={handleSubmit}>
+          <Autocomplete
+            options={members}
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(option, value) => option._id === value._id}
+            onChange={handleMemberChange}
+            renderInput={(params) => (
+              <TextField 
+                {...params} 
+                label="Member Name" 
+                margin="normal" 
+                fullWidth 
+                required
               />
-              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
-                Member Name
-              </span>
-            </div>
-            {memberSuggestions.length > 0 && (
-              <ul className="absolute w-full bg-white border border-gray-300 rounded mt-1 z-10">
-                {memberSuggestions.map((member, index) => (
-                  <li
-                    key={member._id}
-                    className={`cursor-pointer py-2 px-3 hover:font-bold ${
-                      highlightedIndex === index ? "bg-gray-300" : ""
-                    }`}
-                    onClick={() => handleMemberSelection(member)}
-                  >
-                    {member.name}
-                  </li>
-                ))}
-              </ul>
             )}
-          </div>
-          <div className="mb-4 relative">
-            <div className="flex flex-col-reverse w-full">
-              <input
-                type="text"
-                name="amount"
-                value={formData.amount}
-                onChange={handleChange}
-                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-                placeholder="Enter custom amount"
-              />
-              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
-                Amount
-              </span>
-            </div>
-            <div className="flex space-x-2 border-[1px] border-black rounded-md select-none mt-2">
-              {defaultAmountOptions.map((option) => (
-                <label
-                  key={option}
-                  className="radio flex flex-grow items-center justify-center rounded-lg p-1 cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="amountOption"
-                    value={option}
-                    className="peer hidden"
-                    checked={formData.amount === option.toString()}
-                    onChange={() => handleAmountOptionClick(option)}
-                  />
-                  <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[#080808] peer-checked:to-[#000000] peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
-                    ₹{option}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className="mb-4 relative">
-            <div className="flex flex-col-reverse w-full">
-              <input
-                type="text"
-                name="interest"
-                value={formData.interest}
-                onChange={handleChange}
-                className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-                placeholder="Enter interest rate"
-              />
-              <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
-                Interest
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex mb-4  relative">
-              <div className="flex flex-col-reverse w-full">
-                <input
-                  type="date"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleChange}
-                  className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-                />
-                <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
-                  Start Date
-                </span>
-              </div>
-            </div>
-            <div className="flex mb-4 relative">
-              <div className="flex flex-col-reverse w-full">
-                <input
-                  type="date"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleChange}
-                  className="peer outline-none border pl-2 py-1 duration-500 border-black focus:border-dashed focus:border-blue-700 bg-inherit w-full placeholder:duration-500 placeholder:absolute focus:placeholder:pt-10 focus:rounded-md"
-                  disabled
-                />
-                <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0 text-blue-700">
-                  End Date
-                </span>
-              </div>
-            </div>
-          </div>
+            sx={{ mb: 2 }}
+          />
 
-          <div className="mb-4 relative">
-            <div className="flex space-x-2 border-[1px] border-black rounded-md select-none justify-around ">
-              <label className="radio flex items-center justify-center rounded-lg p-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="paymentType"
-                  value="cash"
-                  className="peer hidden"
-                  checked={formData.paymentType === "cash"}
-                  onChange={handleChange}
-                />
-                <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[#080808] peer-checked:to-[#000000] peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
-                  Cash
-                </span>
-              </label>
-              <label className="radio flex items-center justify-center rounded-lg p-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="paymentType"
-                  value="gpay"
-                  className="peer hidden"
-                  checked={formData.paymentType === "gpay"}
-                  onChange={handleChange}
-                />
-                <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[#080808] peer-checked:to-[#000000] peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
-                  GPay
-                </span>
-              </label>
-            </div>
-          </div>
-          <div className="flex items-center justify-center">
-            <button
-              type="submit"
-              className="w-full cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
-              disabled={loading}
+          <TextField
+            label="Amount"
+            name="amount"
+            value={formData.amount}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+            sx={{ mb: 2 }}
+          />
+
+          <ToggleButtonGroup
+            exclusive
+            fullWidth
+            sx={{ mb: 3 }}
+          >
+            {defaultAmountOptions.map((option) => (
+              <ToggleButton 
+                key={option}
+                selected={formData.amount === option.toString()}
+                onClick={() => handleAmountOptionClick(option)}
+                value={option}
+                sx={{ 
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    }
+                  }
+                }}
+              >
+                ₹{option}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+
+          <TextField
+            label="Interest Rate"
+            name="interest"
+            value={formData.interest}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+            sx={{ mb: 2 }}
+          />
+
+          <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+            <TextField
+              label="Start Date"
+              name="startDate"
+              type="date"
+              value={formData.startDate}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="End Date"
+              name="endDate"
+              type="date"
+              value={formData.endDate}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              InputProps={{ readOnly: true }}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+
+          <FormControl component="fieldset" sx={{ mb: 3, width: "100%" }}>
+            <ToggleButtonGroup
+              exclusive
+              value={formData.paymentType}
+              onChange={handlePaymentTypeChange}
+              fullWidth
             >
-              {loading ? "Adding..." : "Add Loan"}
-            </button>
-          </div>
+              <ToggleButton value="cash" sx={{ 
+                '&.Mui-selected': {
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                  }
+                }
+              }}>
+                Cash
+              </ToggleButton>
+              <ToggleButton value="gpay" sx={{ 
+                '&.Mui-selected': {
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                  }
+                }
+              }}>
+                GPay
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </FormControl>
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={loading}
+            sx={{ 
+              py: 1.5,
+              bgcolor: 'primary.main',
+              '&:hover': {
+                bgcolor: 'primary.dark',
+              }
+            }}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Add Loan"
+            )}
+          </Button>
         </form>
-      </div>
-    </div>
+      </Paper>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 
